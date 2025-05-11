@@ -35,7 +35,7 @@ namespace Universal_THCRAP_Launcher.MVVM.ViewModel.Service
             _notificationGrid = containerGrid;
         }
 
-        public Notification ShowNotification(string title, string message, NotificationViewModel.ToastType type = NotificationViewModel.ToastType.Info, int duration = 5)
+        public Notification ShowNotification(string title, string message, NotificationViewModel.NotificationType type = NotificationViewModel.NotificationType.Info, int duration = 5)
         {
             if (_notificationGrid == null)
                 throw new InvalidOperationException("NotificationService is not initialized. Call Initialize() first.");

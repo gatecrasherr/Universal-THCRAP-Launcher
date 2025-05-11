@@ -16,10 +16,10 @@ namespace Universal_THCRAP_Launcher.MVVM.ViewModel
         private string _message;
         private Geometry _iconData;
         private Brush _iconColor;
-        private ToastType _type;
+        private NotificationType _type;
         private int _duration = 5;
 
-        public enum ToastType
+        public enum NotificationType
         {
             Info,
             Success,
@@ -50,7 +50,7 @@ namespace Universal_THCRAP_Launcher.MVVM.ViewModel
             set => SetProperty(ref _iconColor, value);
         }
 
-        public ToastType Type
+        public NotificationType Type
         {
             get => _type;
             set
@@ -66,7 +66,7 @@ namespace Universal_THCRAP_Launcher.MVVM.ViewModel
             set => SetProperty(ref _duration, value);
         }
 
-        public NotificationViewModel(string title, string message, ToastType type = ToastType.Info, int duration = 5)
+        public NotificationViewModel(string title, string message, NotificationType type = NotificationType.Info, int duration = 5)
         {
             Title = title;
             Message = message;
@@ -74,27 +74,28 @@ namespace Universal_THCRAP_Launcher.MVVM.ViewModel
             Duration = duration;
         }
 
+        // This is just SVG data. In the future, feel free to replace them by opening any .SVG in Notepad. These ones have been taken off Google Fonts.
         private void UpdateAppearanceByType()
         {
             switch (Type)
             {
-                case ToastType.Info:
-                    IconData = Geometry.Parse("M12,2C6.48,2 2,6.48 2,12C2,17.52 6.48,22 12,22C17.52,22 22,17.52 22,12C22,6.48 17.52,2 12,2ZM13,17H11V11H13V17ZM13,9H11V7H13V9Z");
+                case NotificationType.Info:
+                    IconData = Geometry.Parse("M440-280h80v-240h-80v240Zm40-320q17 0 28.5-11.5T520-640q0-17-11.5-28.5T480-680q-17 0-28.5 11.5T440-640q0 17 11.5 28.5T480-600Zm0 520q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Z");
                     IconColor = new SolidColorBrush(Color.FromRgb(66, 165, 245));
                     break;
 
-                case ToastType.Success:
-                    IconData = Geometry.Parse("M12,2C6.48,2 2,6.48 2,12C2,17.52 6.48,22 12,22C17.52,22 22,17.52 22,12C22,6.48 17.52,2 12,2ZM10,17L5,12L6.41,10.59L10,14.17L17.59,6.58L19,8L10,17Z");
+                case NotificationType.Success:
+                    IconData = Geometry.Parse("m424-296 282-282-56-56-226 226-114-114-56 56 170 170Zm56 216q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Z");
                     IconColor = new SolidColorBrush(Color.FromRgb(76, 175, 80));
                     break;
 
-                case ToastType.Warning:
-                    IconData = Geometry.Parse("M1,21H23L12,2L1,21ZM13,18H11V16H13V18ZM13,14H11V10H13V14Z");
+                case NotificationType.Warning:
+                    IconData = Geometry.Parse("m40-120 440-760 440 760H40Zm440-120q17 0 28.5-11.5T520-280q0-17-11.5-28.5T480-320q-17 0-28.5 11.5T440-280q0 17 11.5 28.5T480-240Zm-40-120h80v-200h-80v200Z");
                     IconColor = new SolidColorBrush(Color.FromRgb(255, 152, 0));
                     break;
 
-                case ToastType.Error:
-                    IconData = Geometry.Parse("M12,2C6.47,2 2,6.47 2,12C2,17.53 6.47,22 12,22C17.53,22 22,17.53 22,12C22,6.47 17.53,2 12,2ZM17,15.59L15.59,17L12,13.41L8.41,17L7,15.59L10.59,12L7,8.41L8.41,7L12,10.59L15.59,7L17,8.41L13.41,12L17,15.59Z");
+                case NotificationType.Error:
+                    IconData = Geometry.Parse("M480-280q17 0 28.5-11.5T520-320q0-17-11.5-28.5T480-360q-17 0-28.5 11.5T440-320q0 17 11.5 28.5T480-280Zm-40-160h80v-240h-80v240Zm40 360q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Z");
                     IconColor = new SolidColorBrush(Color.FromRgb(244, 67, 54));
                     break;
             }

@@ -99,7 +99,7 @@ namespace Universal_THCRAP_Launcher
 
         private void AutoInstance_Click(object sender, RoutedEventArgs e)
         {
-            NotificationService.Instance.ShowNotification("Auto Instance", "Not implemented yet.", NotificationViewModel.ToastType.Info, 10);
+            NotificationService.Instance.ShowNotification("Auto Instance", "Not implemented yet.", NotificationViewModel.NotificationType.Info, 10);
         }
 
         private void settingsClick(object sender, RoutedEventArgs e)

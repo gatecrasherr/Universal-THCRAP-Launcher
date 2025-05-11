@@ -92,7 +92,7 @@ namespace Universal_THCRAP_Launcher.MVVM.ViewModel
             if(!CanLaunchGame())
                 return;
 
-            var attemptLaunchNotification = NotificationService.Instance.ShowNotification("Launching...", $"Attempting to launch Instance...", NotificationViewModel.ToastType.Info, 500);
+            var attemptLaunchNotification = NotificationService.Instance.ShowNotification("Launching...", $"Attempting to launch Instance...", NotificationViewModel.NotificationType.Info, 500);
 
             gameModel.StartGame(SelectedID, SelectedConfig);
 
@@ -103,13 +103,13 @@ namespace Universal_THCRAP_Launcher.MVVM.ViewModel
             {
                 NotificationService.Instance.Destroy(attemptLaunchNotification);
                 await Task.Delay(280);
-                NotificationService.Instance.ShowNotification("Success!", $"Successfully launched Instance.", NotificationViewModel.ToastType.Success, 6);
+                NotificationService.Instance.ShowNotification("Success!", $"Successfully launched Instance.", NotificationViewModel.NotificationType.Success, 6);
             }
             else
             {
                 NotificationService.Instance.Destroy(attemptLaunchNotification);
                 await Task.Delay(280);
-                NotificationService.Instance.ShowNotification("Error!", $"Failed to launch Instance!", NotificationViewModel.ToastType.Error, 6);
+                NotificationService.Instance.ShowNotification("Error!", $"Failed to launch Instance!", NotificationViewModel.NotificationType.Error, 6);
             }
         }
 
