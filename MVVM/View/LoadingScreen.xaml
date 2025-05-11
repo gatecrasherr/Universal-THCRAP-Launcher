@@ -1,0 +1,16 @@
+﻿<UserControl x:Class="Universal_THCRAP_Launcher.MVVM.View.LoadingScreen"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Universal_THCRAP_Launcher.MVVM.View"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid Background="#111111">
+        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+            <TextBlock Text="THCrap is preparing. Please wait warmly..." FontSize="24" Foreground="White" HorizontalAlignment="Center" Margin="0,0,0,30"/>
+            <ProgressBar x:Name="LoadingProgressBar" Width="300" Height="6" IsIndeterminate="True" Foreground="#40464C" Background="#31363B"/>
+            <TextBlock x:Name="StatusTextBlock" Text="{Binding StatusText}" Foreground="#AAAAAA" HorizontalAlignment="Center" Margin="0,15,0,0"/>
+        </StackPanel>
+    </Grid>
+</UserControl>

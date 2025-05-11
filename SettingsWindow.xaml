@@ -1,0 +1,48 @@
+﻿<Window x:Class="Universal_THCRAP_Launcher.SettingsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Universal_THCRAP_Launcher"
+        mc:Ignorable="d" WindowStyle="None" FontFamily="pack://application:,,,/Resources/#Inter Light"
+        Title="SettingsWindow" Background="Transparent"
+        Height="700" Width="800" AllowsTransparency="True"
+        Loaded="Window_Loaded">
+    <WindowChrome.WindowChrome>
+        <WindowChrome GlassFrameThickness="0" CornerRadius="6,6,0,0" CaptionHeight="0" UseAeroCaptionButtons="False"/>
+    </WindowChrome.WindowChrome>
+
+    <Border Background="#24282B" SnapsToDevicePixels="True" Padding="0.6">
+        <Border Background="#111111" SnapsToDevicePixels="True" Padding="0.5">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="28"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <Grid Background="Transparent" Grid.Row="0" MouseDown="Window_LeftMouseButtonDown">
+                    <TextBlock x:Name="TitleTextBlock" Text="Settings" HorizontalAlignment="Center" VerticalAlignment="Center"
+                           Foreground="White" FontSize="14" Grid.Column="0"/>
+
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                        <Button x:Name="ButtonClose" Content="&#x2715;" Width="40" Height="28"
+                            BorderBrush="Transparent" Background="Transparent" Foreground="White" Click="ButtonClose_Click"/>
+                    </StackPanel>
+                </Grid>
+
+                <Grid Grid.Row="1">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="200"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel x:Name="ButtonContainer" Grid.Column="0" Background="#1A1A1A" Orientation="Vertical">
+                        <Button x:Name="DefaultSelected" Style="{StaticResource ConfigTabStyle}" Width="200" Height="40" Content="Launcher" Click="ConfigTabButton_Click"/>
+                        <Button Style="{StaticResource ConfigTabStyle}" Width="200" Height="40" Content="Touhou" Click="ConfigTabButton_Click"/>
+                        <Button Style="{StaticResource ConfigTabStyle}" Width="200" Height="40" Content="THCRAP" Click="ConfigTabButton_Click"/>
+                    </StackPanel>
+                </Grid>
+            </Grid>
+        </Border>
+    </Border>
+</Window>

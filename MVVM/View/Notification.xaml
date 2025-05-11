@@ -1,0 +1,60 @@
+﻿<UserControl x:Class="Universal_THCRAP_Launcher.MVVM.View.Notification"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Universal_THCRAP_Launcher.MVVM.View"
+             mc:Ignorable="d" Height="Auto" Width="300"
+             UseLayoutRounding="True" SnapsToDevicePixels="True"
+             Opacity="0" FontFamily="pack://application:,,,/Resources/#Inter Light">
+    <UserControl.Resources>
+        <Storyboard x:Key="ShowNotificationStoryboard">
+            <DoubleAnimation Storyboard.TargetProperty="Opacity" From="0" To="1" Duration="0:0:0.3"/>
+            <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.Y)" From="50" To="0" Duration="0:0:0.3">
+                <DoubleAnimation.EasingFunction>
+                    <BackEase EasingMode="EaseOut" Amplitude="0.3"/>
+                </DoubleAnimation.EasingFunction>
+            </DoubleAnimation>
+        </Storyboard>
+
+        <Storyboard x:Key="HideNotificationStoryboard">
+            <DoubleAnimation Storyboard.TargetProperty="Opacity" From="1" To="0" Duration="0:0:0.3"/>
+            <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.Y)" From="0" To="50" Duration="0:0:0.3">
+                <DoubleAnimation.EasingFunction>
+                    <BackEase EasingMode="EaseIn" Amplitude="0.3"/>
+                </DoubleAnimation.EasingFunction>
+            </DoubleAnimation>
+        </Storyboard>
+    </UserControl.Resources>
+
+    <UserControl.RenderTransform>
+        <TranslateTransform/>
+    </UserControl.RenderTransform>
+
+    <Border CornerRadius="4" Margin="4" Background="#3C3C3C" Effect="{StaticResource DropShadowEffect}">
+        <Border CornerRadius="3" Margin="1" Background="#2C2C2C">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <Border x:Name="IconBorder" Grid.Column="0" Width="40" Height="40" Background="Transparent" Margin="8">
+                    <Path x:Name="IconPath" Data="{Binding IconData}" Fill="{Binding IconColor}" Stretch="Uniform" Width="24" Height="24"/>
+                </Border>
+
+                <StackPanel Grid.Column="1" Margin="0,12" VerticalAlignment="Center">
+                    <TextBlock x:Name="TitleTextBlock" Text="{Binding Title}" FontWeight="SemiBold" FontSize="14" Foreground="White"/>
+                    <TextBlock x:Name="MessageTextBlock" Text="{Binding Message}" TextWrapping="Wrap" FontSize="14" Foreground="#CCCCCC"/>
+                </StackPanel>
+
+
+                <Button Grid.Column="2" Width="30" Height="30" Margin="5" Background="Transparent" BorderBrush="Transparent"
+                    VerticalAlignment="Top" HorizontalAlignment="Right" Click="CloseButton_Click">
+                    <TextBlock Text="✕" Foreground="#AAAAAA" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                </Button>
+            </Grid>
+        </Border>
+    </Border>
+</UserControl>
