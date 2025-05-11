@@ -13,7 +13,7 @@ namespace Universal_THCRAP_Launcher.MVVM.ViewModel
         private bool _isLoading = true;
         private double _opacity = 1.0;
 
-        public string LoadingText
+        public string StatusText
         {
             get => _loadingText;
             set => SetProperty(ref _loadingText, value);
@@ -33,12 +33,12 @@ namespace Universal_THCRAP_Launcher.MVVM.ViewModel
 
         public async Task InitializeAsync()
         {
-            await Task.Delay(10);
-            LoadingText = "Loading configuration...";
-            await Task.Delay(10);
-            LoadingText = "Loading game data...";
-            await Task.Delay(10);
-            LoadingText = "Ready!";
+            await Task.Delay(1);
+            StatusText = "Loading configuration...";
+            await Task.Delay(1);
+            StatusText = "Loading game data...";
+            await Task.Delay(1);
+            StatusText = "Ready!";
 
             await FadeOutAsync();
         }

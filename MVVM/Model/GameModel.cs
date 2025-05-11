@@ -112,13 +112,10 @@ namespace Universal_THCRAP_Launcher.MVVM.Model
         // Should get the stringDef location automatically, remove later
         public string IDtoFullName(string gameID, string stringDefsPath)
         {
-            stringDefsPath = _basePath + stringDefsPath;
+            JObject jsonObject = JsonReader(_basePath + stringDefsPath);
 
             try
             {
-                string jsonContent = File.ReadAllText(stringDefsPath);
-                JObject jsonObject = JObject.Parse(jsonContent);
-
                 if(jsonObject.ContainsKey(gameID))
                     return jsonObject[gameID].ToString();
 
@@ -133,30 +130,21 @@ namespace Universal_THCRAP_Launcher.MVVM.Model
 
         public int GameCount(string filePath, string custom)
         {
-            filePath = _basePath + filePath;
-
-            string jsonContent = File.ReadAllText(filePath);
-            JObject jsonObject = JObject.Parse(jsonContent);
+            JObject jsonObject = JsonReader(_basePath + filePath);
 
             return jsonObject.Count - jsonObject.Properties().Count(prop => prop.Name.Contains(custom));
         }
 
         public List<string> GameID(string filePath, string custom)
         {
-            filePath = _basePath + filePath;
-            
-            string jsonContent = File.ReadAllText(filePath);
-            JObject jsonObject = JObject.Parse(jsonContent);
+            JObject jsonObject = JsonReader(_basePath + filePath);
 
             return jsonObject.Properties().Where(prop => !prop.Name.Contains(custom)).Select(prop => prop.Name).ToList();
         }
 
         public List<string> GamePath(string filePath, string custom)
         {
-            filePath = _basePath + filePath;
-
-            string jsonContent = File.ReadAllText(filePath);
-            JObject jsonObject = JObject.Parse(jsonContent);
+            JObject jsonObject = JsonReader(_basePath + filePath);
 
             return jsonObject.Properties().Where(prop => !prop.Value.ToString().Contains(custom)).Select(prop => prop.Value.ToString()).ToList();
         }
@@ -175,6 +163,21 @@ namespace Universal_THCRAP_Launcher.MVVM.Model
             gameIcon = Imaging.CreateBitmapSourceFromHIcon(icon.Handle, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
 
             return gameIcon;
+        }
+
+        //Helper Function
+        private JObject JsonReader(string filePath)
+        {
+            try
+            {
+                string jsonContent = File.ReadAllText(filePath);
+                return JObject.Parse(jsonContent);
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.Message);
+                return null;
+            }
         }
     }
 }

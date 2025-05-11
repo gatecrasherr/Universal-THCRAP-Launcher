@@ -97,7 +97,7 @@ namespace Universal_THCRAP_Launcher.MVVM.ViewModel
             gameModel.StartGame(SelectedID, SelectedConfig);
 
             // Thinking about this again, this isn't the best way to do it. What if the loader takes too long to update?
-            bool found = await gameModel.ScanForExeAsync(SelectedID, TimeSpan.FromSeconds(5));
+            bool found = await gameModel.ScanForExeAsync(SelectedID, TimeSpan.FromSeconds(20));
 
             if (found)
             {
@@ -123,23 +123,6 @@ namespace Universal_THCRAP_Launcher.MVVM.ViewModel
                 Process.Start("explorer.exe", selectedGamePath);
             else
                 Console.WriteLine("Directory not found.");
-        }
-
-        private string GetGamePath(string path)
-        {
-            if (path.EndsWith(".exe"))
-            {
-                int lastSlashIndex = path.LastIndexOf("/");
-
-                if (lastSlashIndex == -1)
-                    lastSlashIndex = path.LastIndexOf("\\");
-
-                path = path.Substring(0, lastSlashIndex);
-            }
-
-            path = path.Replace('/', '\\');
-
-            return path;
         }
 
         private bool CanLaunchGame()
@@ -193,7 +176,7 @@ namespace Universal_THCRAP_Launcher.MVVM.ViewModel
                 List<string> id = gameModel.GameID(filePath, custom);
                 List<string> configs = gameModel.ConfigList();
 
-                SelectedConfig = gameModel.ConfigList()[0];
+                SelectedConfig = configs[0];
 
                 Application.Current.Dispatcher.Invoke(() =>
                 {
@@ -285,6 +268,24 @@ namespace Universal_THCRAP_Launcher.MVVM.ViewModel
         // AddGame and Category here...
 
         // Helper functions
+
+        private string GetGamePath(string path)
+        {
+            if (path.EndsWith(".exe"))
+            {
+                int lastSlashIndex = path.LastIndexOf("/");
+
+                if (lastSlashIndex == -1)
+                    lastSlashIndex = path.LastIndexOf("\\");
+
+                path = path.Substring(0, lastSlashIndex);
+            }
+
+            // Explorer is weird as it forces us to use \\ instead of /, so we replace it here
+            path = path.Replace('/', '\\');
+
+            return path;
+        }
 
         private void SelectGameItem(GameItem item, GameSelectedEventArgs e)
         {
