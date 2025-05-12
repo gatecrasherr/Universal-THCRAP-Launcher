@@ -99,6 +99,7 @@ namespace Universal_THCRAP_Launcher.MVVM.ViewModel
             // Thinking about this again, this isn't the best way to do it. What if the loader takes too long to update?
             bool found = await gameModel.ScanForExeAsync(SelectedID, TimeSpan.FromSeconds(20));
 
+            // The Delay is only so that the Notification has the time to disappear. Will move it.
             if (found)
             {
                 NotificationService.Instance.Destroy(attemptLaunchNotification);
@@ -123,11 +124,6 @@ namespace Universal_THCRAP_Launcher.MVVM.ViewModel
                 Process.Start("explorer.exe", selectedGamePath);
             else
                 Console.WriteLine("Directory not found.");
-        }
-
-        private bool CanLaunchGame()
-        {
-            return IsGameSelected && !string.IsNullOrEmpty(SelectedConfig) && !string.IsNullOrEmpty(SelectedPath) && !string.IsNullOrEmpty(SelectedID);
         }
 
         public void UnselectGame()
@@ -285,6 +281,11 @@ namespace Universal_THCRAP_Launcher.MVVM.ViewModel
             path = path.Replace('/', '\\');
 
             return path;
+        }
+
+        private bool CanLaunchGame()
+        {
+            return IsGameSelected && !string.IsNullOrEmpty(SelectedConfig) && !string.IsNullOrEmpty(SelectedPath) && !string.IsNullOrEmpty(SelectedID);
         }
 
         private void SelectGameItem(GameItem item, GameSelectedEventArgs e)

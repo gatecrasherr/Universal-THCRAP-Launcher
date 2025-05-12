@@ -97,17 +97,39 @@ namespace Universal_THCRAP_Launcher
             }
         }
 
+        // Navbar item click handler (temporary, most will be in a ViewModel)
+
+        private void RefreshInstance_Click(object sender, RoutedEventArgs e)
+        {
+            NotificationService.Instance.ShowNotification("Refresh Instance", "Not implemented yet.", NotificationViewModel.NotificationType.Info, 10);
+        }
+
         private void AutoInstance_Click(object sender, RoutedEventArgs e)
         {
             NotificationService.Instance.ShowNotification("Auto Instance", "Not implemented yet.", NotificationViewModel.NotificationType.Info, 10);
         }
 
-        private void settingsClick(object sender, RoutedEventArgs e)
+        private void ManualInstance_Click(object sender, RoutedEventArgs e)
+        {
+            NotificationService.Instance.ShowNotification("Manual Instance", "Not implemented yet.", NotificationViewModel.NotificationType.Info, 10);
+        }
+
+        private void Settings_Click(object sender, RoutedEventArgs e)
         {
             SettingsWindow settingsWindow = new SettingsWindow();
             settingsWindow.Owner = this;
             settingsWindow.WindowStartupLocation = WindowStartupLocation.CenterOwner;
             settingsWindow.ShowDialog();
+        }
+
+        private void Help_Click(object sender, RoutedEventArgs e)
+        {
+            NotificationService.Instance.ShowNotification("Help", "Not implemented yet.", NotificationViewModel.NotificationType.Info, 10);
+        }
+
+        private void About_Click(object sender, RoutedEventArgs e)
+        {
+            NotificationService.Instance.ShowNotification("About", "Not implemented yet.", NotificationViewModel.NotificationType.Info, 10);
         }
 
         // Window behavior

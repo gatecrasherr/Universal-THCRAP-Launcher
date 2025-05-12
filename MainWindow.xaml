@@ -65,16 +65,16 @@
                             </StackPanel>
                             <Button.ContextMenu>
                                 <ContextMenu HorizontalOffset="0,2">
-                                    <MenuItem Header="Refresh Instance list"/>
+                                    <MenuItem Header="Refresh Instance list" Click="RefreshInstance_Click"/>
                                     <MenuItem Header="Find new Instances automatically" Click="AutoInstance_Click"/>
-                                    <MenuItem Header="Add new Instance manually"/>
+                                    <MenuItem Header="Add new Instance manually" Click="ManualInstance_Click"/>
                                 </ContextMenu>
                             </Button.ContextMenu>
                         </Button>
 
-                        <Button Content="Settings" Style="{StaticResource NavButtonStyle}" Click="settingsClick" Width="100" Height="40" Margin="5,0,0,0"/>
-                        <Button Content="Help" Style="{StaticResource NavButtonStyle}" Width="100" Height="40" Margin="5,0,0,0"/>
-                        <Button Content="About" Style="{StaticResource NavButtonStyle}" Width="100" Height="40" Margin="5,0,0,0"/>
+                        <Button Content="Settings" Style="{StaticResource NavButtonStyle}" Click="Settings_Click" Width="100" Height="40" Margin="5,0,0,0"/>
+                        <Button Content="Help" Style="{StaticResource NavButtonStyle}" Click="Help_Click" Width="100" Height="40" Margin="5,0,0,0"/>
+                        <Button Content="About" Style="{StaticResource NavButtonStyle}" Click="About_Click" Width="100" Height="40" Margin="5,0,0,0"/>
                     </StackPanel>
                 </Grid>
 
