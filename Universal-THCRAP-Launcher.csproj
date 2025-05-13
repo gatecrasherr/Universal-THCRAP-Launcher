@@ -64,7 +64,9 @@
     </ApplicationDefinition>
     <Compile Include="Core\ObservableObject.cs" />
     <Compile Include="Core\RelayCommand.cs" />
+    <Compile Include="MVVM\Model\DownloadModel.cs" />
     <Compile Include="MVVM\Model\GameModel.cs" />
+    <Compile Include="MVVM\Model\LoadModel.cs" />
     <Compile Include="MVVM\ViewModel\LoadingScreenViewModel.cs" />
     <Compile Include="MVVM\ViewModel\MainViewModel.cs" />
     <Compile Include="MVVM\ViewModel\NotificationViewModel.cs" />

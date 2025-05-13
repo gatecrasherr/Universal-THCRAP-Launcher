@@ -32,8 +32,8 @@ namespace Universal_THCRAP_Launcher.MVVM.Model
         {
             var processInfo = new ProcessStartInfo
             {
-                FileName = "cmd.exe",
-                Arguments = $"/C {_thcrapLoader} {config + ".js"} {game}",
+                FileName = $"{_thcrapLoader}",
+                Arguments = $"{config + ".js"} {game}",
                 CreateNoWindow = true,
                 UseShellExecute = false,
                 RedirectStandardOutput = false,
