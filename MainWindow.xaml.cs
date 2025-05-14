@@ -23,6 +23,9 @@ namespace Universal_THCRAP_Launcher
     /// </summary>
     public partial class MainWindow : Window
     {
+        private bool _isConfigOpen = false;
+        private bool _isInstanceOpen = false;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -49,14 +52,24 @@ namespace Universal_THCRAP_Launcher
 
         private void InstancesButton_Click(object sender, RoutedEventArgs e)
         {
-            //Button button = sender as Button;
-
-            //if(button?.ContextMenu != null)
             if (sender is Button button)
             {
+                if (_isInstanceOpen)
+                {
+                    button.ContextMenu.IsOpen = false;
+                    _isInstanceOpen = false;
+                    return;
+                }
+
                 button.ContextMenu.PlacementTarget = button;
                 button.ContextMenu.Placement = System.Windows.Controls.Primitives.PlacementMode.Bottom;
                 button.ContextMenu.IsOpen = true;
+                _isInstanceOpen = true;
+
+                button.ContextMenu.Closed += (s, args) =>
+                {
+                    _isInstanceOpen = false;
+                };
             }
         }
 
@@ -65,17 +78,30 @@ namespace Universal_THCRAP_Launcher
             e.Handled = true;
         }
 
-        private void ConfigButton_Click(object sender, RoutedEventArgs e)
+        private async void ConfigButton_Click(object sender, RoutedEventArgs e)
         {
             if (sender is Button button)
             {
+                if (_isConfigOpen)
+                {
+                    ConfigContextMenu.IsOpen = false;
+                    _isConfigOpen = false;
+                    return;
+                }
+
                 ConfigContextMenu.Items.Clear();
 
-                AddDynamicMenuItems();
+                await AddDynamicMenuItemsAsync();
 
                 ConfigContextMenu.PlacementTarget = button;
                 ConfigContextMenu.Placement = System.Windows.Controls.Primitives.PlacementMode.Bottom;
                 ConfigContextMenu.IsOpen = true;
+                _isConfigOpen = true;
+
+                ConfigContextMenu.Closed += (s, args) =>
+                {
+                    _isConfigOpen = false;
+                };
             }
         }
 
@@ -84,13 +110,13 @@ namespace Universal_THCRAP_Launcher
             e.Handled = true;
         }
 
-        private void AddDynamicMenuItems()
+        private async Task AddDynamicMenuItemsAsync()
         {
             if (DataContext is MainViewModel viewModel)
             {
                 ConfigContextMenu.Items.Clear();
 
-                var menuItems = viewModel.ConfigMenuItems();
+                var menuItems = await viewModel.ConfigMenuItemsAsync();
 
                 foreach (var menuItem in menuItems)
                     ConfigContextMenu.Items.Add(menuItem);

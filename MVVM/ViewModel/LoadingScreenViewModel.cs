@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Universal_THCRAP_Launcher.Core;
+using Universal_THCRAP_Launcher.MVVM.Model;
 
 namespace Universal_THCRAP_Launcher.MVVM.ViewModel
 {
@@ -34,7 +35,8 @@ namespace Universal_THCRAP_Launcher.MVVM.ViewModel
         public async Task InitializeAsync()
         {
             await Task.Delay(1);
-            StatusText = "Loading configuration...";
+            //await DownloadModel.Main();
+            StatusText = "Downloading THCrap...";
             await Task.Delay(1);
             StatusText = "Loading game data...";
             await Task.Delay(1);

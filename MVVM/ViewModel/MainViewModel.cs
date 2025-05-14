@@ -152,14 +152,18 @@ namespace Universal_THCRAP_Launcher.MVVM.ViewModel
 
         public async Task InitializeAsync()
         {
-            LoadAppContent();
+            var loadingViewTask = LoadingViewModel.InitializeAsync();
+            var loadContentTask = LoadAppContent();
 
-            await LoadingViewModel.InitializeAsync();
+            // For some reason, this is the fastest way to load the app. Don't ask me why.
+            // Running LoadingViewModel.InitializeAsync() first causes the app to freeze for a few seconds,
+            // my fault for not using async everywhere in the first place, I guess. Too late now.
+            await Task.WhenAll(loadingViewTask, loadContentTask);
 
             ContentLoaded = true;
         }
 
-        private void LoadAppContent()
+        private async Task LoadAppContent()
         {
             if (Application.Current.MainWindow is MainWindow mainWindow)
             {
@@ -167,14 +171,16 @@ namespace Universal_THCRAP_Launcher.MVVM.ViewModel
                 string strDef = "\\thcrap\\repos\\thpatch\\lang_en\\stringdefs.js";
                 string custom = "custom";
 
-                int num = gameModel.GameCount(filePath, custom);
-                List<string> paths = gameModel.GamePath(filePath, custom);
-                List<string> id = gameModel.GameID(filePath, custom);
-                List<string> configs = gameModel.ConfigList();
+                //gameModel.CheckSetup();
+
+                int num = await Task.Run(() => gameModel.GameCount(filePath, custom));
+                List<string> paths = await Task.Run(() => gameModel.GamePathAsync(filePath, custom));
+                List<string> id = await Task.Run(() => gameModel.GameID(filePath, custom));
+                List<string> configs = await Task.Run(() => gameModel.ConfigListAsync());
 
                 SelectedConfig = configs[0];
 
-                Application.Current.Dispatcher.Invoke(() =>
+                await Application.Current.Dispatcher.InvokeAsync(async () =>
                 {
                     for (int i = 0; i < num; i++)
                     {
@@ -184,7 +190,7 @@ namespace Universal_THCRAP_Launcher.MVVM.ViewModel
 
                         var gameItem = new GameItem
                         {
-                            DisplayTitle = gameModel.IDtoFullName(id[i], strDef),
+                            DisplayTitle = await gameModel.IDtoFullNameAsync(id[i], strDef),
                             GameId = id[i],
                             GamePath = gameModel.ResolvePath(paths[i]),
                             DisplayIcon = gameModel.GameImage(iconPath, id[i])
@@ -226,10 +232,10 @@ namespace Universal_THCRAP_Launcher.MVVM.ViewModel
                 await LaunchGameAsync();
         }
 
-        public IEnumerable<MenuItem> ConfigMenuItems()
+        public async Task<IEnumerable<MenuItem>> ConfigMenuItemsAsync()
         {
             var menuItems = new List<MenuItem>();
-            List<string> configs = gameModel.ConfigList();
+            List<string> configs = await gameModel.ConfigListAsync();
 
             int num = configs.Count;
             Debug.WriteLine($"Number of configs: {num}");

@@ -28,6 +28,25 @@ namespace Universal_THCRAP_Launcher.MVVM.Model
             "config.js"
         };
 
+        public async Task CheckSetupAsync()
+        {
+            GameModel game = new GameModel();
+
+            /*if (!Directory.Exists(_basePath + "\\thcrap"))
+            {
+                await Task.Run(() => {
+                    Directory.CreateDirectory(_basePath + "\\thcrap");
+                    Directory.CreateDirectory(_basePath + "\\thcrap\\config");
+                    //new DownloadModel().DownloadLatestReleaseZipAsync("thpatch", "thcrap", _basePath + "\\thcrap").Wait();
+                });
+            }*/
+
+            game._thcrapFolder = _basePath + "\\thcrap";
+            game._thcrapConfigs = _basePath + "\\thcrap\\config";
+            game._thcrapLoader = _basePath + "\\thcrap\\bin\\thcrap_loader.exe";
+
+        }
+
         public void StartGame(string game, string config)
         {
             var processInfo = new ProcessStartInfo
@@ -45,9 +64,9 @@ namespace Universal_THCRAP_Launcher.MVVM.Model
             Process.Start(processInfo);
         }
 
-        public List<string> ConfigList()
+        public async Task<List<string>> ConfigListAsync()
         {
-            return Directory.GetFiles(_thcrapConfigs).Select(Path.GetFileName).Where(file => !_excludedConfigs.Contains(file)).Select(file => Path.GetFileNameWithoutExtension(file)).ToList();
+            return await Task.Run(() => Directory.GetFiles(_thcrapConfigs).Select(Path.GetFileName).Where(file => !_excludedConfigs.Contains(file)).Select(file => Path.GetFileNameWithoutExtension(file)).ToList());
         }
 
         public async Task<bool> ScanForExeAsync(string exeName, TimeSpan timeout)
@@ -93,7 +112,7 @@ namespace Universal_THCRAP_Launcher.MVVM.Model
 
         public string ResolvePath(string path)
         {
-            if(Path.IsPathRooted(path))
+            if (Path.IsPathRooted(path))
             {
                 return path;
             }
@@ -110,9 +129,9 @@ namespace Universal_THCRAP_Launcher.MVVM.Model
         }
 
         // Should get the stringDef location automatically, remove later
-        public string IDtoFullName(string gameID, string stringDefsPath)
+        public async Task<string> IDtoFullNameAsync(string gameID, string stringDefsPath)
         {
-            JObject jsonObject = JsonReader(_basePath + stringDefsPath);
+            JObject jsonObject = await JsonReaderAsync(_basePath + stringDefsPath);
 
             try
             {
@@ -128,23 +147,23 @@ namespace Universal_THCRAP_Launcher.MVVM.Model
             }
         }
 
-        public int GameCount(string filePath, string custom)
+        public async Task<int> GameCount(string filePath, string custom)
         {
-            JObject jsonObject = JsonReader(_basePath + filePath);
+            JObject jsonObject = await JsonReaderAsync(_basePath + filePath);
 
             return jsonObject.Count - jsonObject.Properties().Count(prop => prop.Name.Contains(custom));
         }
 
-        public List<string> GameID(string filePath, string custom)
+        public async Task<List<string>> GameID(string filePath, string custom)
         {
-            JObject jsonObject = JsonReader(_basePath + filePath);
+            JObject jsonObject = await JsonReaderAsync(_basePath + filePath);
 
             return jsonObject.Properties().Where(prop => !prop.Name.Contains(custom)).Select(prop => prop.Name).ToList();
         }
 
-        public List<string> GamePath(string filePath, string custom)
+        public async Task<List<string>> GamePathAsync(string filePath, string custom)
         {
-            JObject jsonObject = JsonReader(_basePath + filePath);
+            JObject jsonObject = await JsonReaderAsync(_basePath + filePath);
 
             return jsonObject.Properties().Where(prop => !prop.Value.ToString().Contains(custom)).Select(prop => prop.Value.ToString()).ToList();
         }
@@ -166,12 +185,15 @@ namespace Universal_THCRAP_Launcher.MVVM.Model
         }
 
         //Helper Function
-        private JObject JsonReader(string filePath)
+        private async Task<JObject> JsonReaderAsync(string filePath)
         {
             try
             {
-                string jsonContent = File.ReadAllText(filePath);
-                return JObject.Parse(jsonContent);
+                using (var reader = new StreamReader (filePath))
+                {
+                    string json = await reader.ReadToEndAsync();
+                    return JObject.Parse(json);
+                }
             }
             catch (Exception ex)
             {
