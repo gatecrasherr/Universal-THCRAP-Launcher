@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.WindowsAPICodePack.Dialogs;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -81,10 +82,10 @@ namespace Universal_THCRAP_Launcher.MVVM.ViewModel
 
         public MainViewModel()
         {
+            LoadingViewModel = new LoadingScreenViewModel();
             LaunchGameCommand = new RelayCommand(async () => await LaunchGameAsync(), CanLaunchGame);
             OpenDirectory = new RelayCommand(OpenLocation);
-            LoadingViewModel = new LoadingScreenViewModel();
-            Application.Current.Dispatcher.BeginInvoke(new Action(async () => await InitializeAsync()));
+            //Application.Current.Dispatcher.BeginInvoke(new Action(async () => await InitializeAsync()));
         }
 
         private async Task LaunchGameAsync()
@@ -152,57 +153,62 @@ namespace Universal_THCRAP_Launcher.MVVM.ViewModel
 
         public async Task InitializeAsync()
         {
-            var loadingViewTask = LoadingViewModel.InitializeAsync();
-            var loadContentTask = LoadAppContent();
+            await LoadingViewModel.InitializeAsync();
 
-            // For some reason, this is the fastest way to load the app. Don't ask me why.
-            // Running LoadingViewModel.InitializeAsync() first causes the app to freeze for a few seconds,
-            // my fault for not using async everywhere in the first place, I guess. Too late now.
-            await Task.WhenAll(loadingViewTask, loadContentTask);
+            LoadingViewModel.FadeOutAsync();
+
+            await LoadAppContent();
 
             ContentLoaded = true;
         }
+
 
         private async Task LoadAppContent()
         {
             if (Application.Current.MainWindow is MainWindow mainWindow)
             {
+                //AddCategory("Test Category");
+
+                // Should be moved to a config file later,
+                // as to allow the user to have a custom path for THCRAP
+
                 string filePath = "\\thcrap\\config\\games.js";
                 string strDef = "\\thcrap\\repos\\thpatch\\lang_en\\stringdefs.js";
                 string custom = "custom";
 
-                //gameModel.CheckSetup();
+                // Ugly, but it works
 
                 int num = await Task.Run(() => gameModel.GameCount(filePath, custom));
                 List<string> paths = await Task.Run(() => gameModel.GamePathAsync(filePath, custom));
                 List<string> id = await Task.Run(() => gameModel.GameID(filePath, custom));
                 List<string> configs = await Task.Run(() => gameModel.ConfigListAsync());
 
+                // For now, defualt to the first config,
+                // and later on, find the last selected one
                 SelectedConfig = configs[0];
 
-                await Application.Current.Dispatcher.InvokeAsync(async () =>
+                for (int i = 0; i < num; i++)
                 {
-                    for (int i = 0; i < num; i++)
+                    string iconPath = gameModel.ResolvePath(paths[i]);
+
+                    Debug.WriteLine(configs[i]);
+
+                    var gameItem = new GameItem
                     {
-                        string iconPath = gameModel.ResolvePath(paths[i]);
+                        DisplayTitle = await gameModel.IDtoFullNameAsync(id[i], strDef),
+                        GameId = id[i],
+                        GamePath = gameModel.ResolvePath(paths[i]),
+                        DisplayIcon = await Task.Run(() => gameModel.GameImage(iconPath, id[i]))
+                    };
 
-                        Debug.WriteLine(configs[i]);
+                    gameItem.GameSelected += GameItem_GameSelected;
 
-                        var gameItem = new GameItem
-                        {
-                            DisplayTitle = await gameModel.IDtoFullNameAsync(id[i], strDef),
-                            GameId = id[i],
-                            GamePath = gameModel.ResolvePath(paths[i]),
-                            DisplayIcon = gameModel.GameImage(iconPath, id[i])
-                        };
+                    gameItem.MouseDoubleClick += GameItem_MouseDoubleClick;
 
-                        gameItem.GameSelected += GameItem_GameSelected;
+                    // Change it from the hardcoded WrapPanel, through a config
 
-                        gameItem.MouseDoubleClick += GameItem_MouseDoubleClick;
-
-                        mainWindow.UncategorizedWrapPanel.Children.Add(gameItem);
-                    }
-                });
+                    mainWindow.UncategorizedWrapPanel.Children.Add(gameItem);
+                }
             }
         }
 
@@ -238,7 +244,6 @@ namespace Universal_THCRAP_Launcher.MVVM.ViewModel
             List<string> configs = await gameModel.ConfigListAsync();
 
             int num = configs.Count;
-            Debug.WriteLine($"Number of configs: {num}");
 
             var newConfigItem = new MenuItem
             {
@@ -267,7 +272,33 @@ namespace Universal_THCRAP_Launcher.MVVM.ViewModel
             return menuItems;
         }
 
-        // AddGame and Category here...
+        // AddGame here...
+
+        public void AddCategory(string categoryName)
+        {
+            if (Application.Current.MainWindow is MainWindow mainWindow)
+            {
+                Expander newExpander = new Expander
+                {
+                    Header = categoryName,
+                    IsExpanded = true,
+                    Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#2A2E32")),
+                    Foreground = Brushes.White
+                };
+
+                var newWrapPanel = new WrapPanel
+                {
+                    Orientation = Orientation.Horizontal,
+                    HorizontalAlignment = HorizontalAlignment.Left
+                };
+
+                newExpander.Style = mainWindow.FindResource("CategoryStyle") as Style;
+
+                newExpander.Content = newWrapPanel;
+
+                mainWindow.MainStackPanel.Children.Add(newExpander);
+            }
+        }
 
         // Helper functions
 

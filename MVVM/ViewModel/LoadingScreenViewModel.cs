@@ -3,8 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Forms;
+using System.Windows.Threading;
 using Universal_THCRAP_Launcher.Core;
 using Universal_THCRAP_Launcher.MVVM.Model;
+using Universal_THCRAP_Launcher.MVVM.ViewModel.Service;
+using MessageBox = System.Windows.MessageBox;
+using Microsoft.WindowsAPICodePack.Dialogs;
 
 namespace Universal_THCRAP_Launcher.MVVM.ViewModel
 {
@@ -13,6 +19,10 @@ namespace Universal_THCRAP_Launcher.MVVM.ViewModel
         private string _loadingText = "Loading...";
         private bool _isLoading = true;
         private double _opacity = 1.0;
+
+        private LoadModel _loadModel = new LoadModel();
+        private DownloadModel _downloadModel = new DownloadModel();
+        private ConfigModel _configModel = new ConfigModel();
 
         public string StatusText
         {
@@ -34,18 +44,36 @@ namespace Universal_THCRAP_Launcher.MVVM.ViewModel
 
         public async Task InitializeAsync()
         {
-            await Task.Delay(1);
-            //await DownloadModel.Main();
-            StatusText = "Downloading THCrap...";
-            await Task.Delay(1);
-            StatusText = "Loading game data...";
-            await Task.Delay(1);
-            StatusText = "Ready!";
+            StatusText = "Checking UTL config...";
+            if (_loadModel.ConfigCheck() == false)
+            {
+                StatusText = "Creating config folder...";
+                _configModel.CreateConfig();
+            }
+            if (_loadModel.SanityCheck() == false)
+            {
+                DialogService _dialogService = DialogService.Instance;
 
-            await FadeOutAsync();
+                StatusText = "Missing THCRAP installation!";
+                var result = _dialogService.ShowInstallationChoiceDialog();
+
+                if (result == InstallationChoiceWindow.DialogueResult.DownloadLatest)
+                {
+                    StatusText = "Downloading THCRAP...";
+
+                    await _downloadModel.DownloadLatest();
+                } 
+                else if (result == InstallationChoiceWindow.DialogueResult.PickExisting)
+                {
+                    StatusText = "Select the THCRAP directory...";
+
+                    string selectedPath = selectDirectory();
+                }
+            }
+            StatusText = "Ready!";
         }
 
-        private async Task FadeOutAsync()
+        public async Task FadeOutAsync()
         {
             for (double i = 1.0; i >= 0.0; i -= 0.05)
             {
@@ -53,6 +81,30 @@ namespace Universal_THCRAP_Launcher.MVVM.ViewModel
                 await Task.Delay(30);
             }
             IsLoading = false;
+        }
+
+        private string selectDirectory()
+        {
+            using (var directoryPick = new CommonOpenFileDialog())
+            {
+                directoryPick.IsFolderPicker = true;
+                directoryPick.Title = "Select THCRAP Directory";
+                directoryPick.RestoreDirectory = true;
+
+                if (directoryPick.ShowDialog() == CommonFileDialogResult.Ok)
+                {
+                    string selectedPath = directoryPick.FileName;
+
+                    return selectedPath;
+                }
+                else
+                {
+                    MessageBox.Show("Bro. Select something. #ChillaxBrah #PickSomethingBrah");
+                    System.Windows.Application.Current.Shutdown();
+                }
+
+                return null;
+            }
         }
     }
 }

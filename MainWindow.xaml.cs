@@ -36,6 +36,14 @@ namespace Universal_THCRAP_Launcher
             MaxHeight = SystemParameters.WorkArea.Height + 8;
             MaxWidth = SystemParameters.WorkArea.Width + 12;
             NotificationService.Instance.Initialize(NotificationContainer);
+            DialogService.Instance.Initialize(this);
+            UpdateWelcomeOverlayVisibility();
+
+
+            if (DataContext is MainViewModel vm)
+            {
+                vm.InitializeAsync();
+            }
         }
 
         private void StackMouseDown(object sender, MouseButtonEventArgs e)
@@ -123,6 +131,13 @@ namespace Universal_THCRAP_Launcher
             }
         }
 
+        private void UpdateWelcomeOverlayVisibility()
+        {
+            bool hasExpanders = MainStackPanel.Children.OfType<Expander>().Any();
+
+            WelcomeOverlay.Visibility = hasExpanders ? Visibility.Collapsed : Visibility.Visible;
+        }
+
         // Navbar item click handler (temporary, most will be in a ViewModel)
 
         private void RefreshInstance_Click(object sender, RoutedEventArgs e)
@@ -142,9 +157,11 @@ namespace Universal_THCRAP_Launcher
 
         private void Settings_Click(object sender, RoutedEventArgs e)
         {
-            SettingsWindow settingsWindow = new SettingsWindow();
-            settingsWindow.Owner = this;
-            settingsWindow.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+            SettingsWindow settingsWindow = new SettingsWindow
+            {
+                Owner = this,
+                WindowStartupLocation = WindowStartupLocation.CenterOwner
+            };
             settingsWindow.ShowDialog();
         }
 

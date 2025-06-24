@@ -28,25 +28,6 @@ namespace Universal_THCRAP_Launcher.MVVM.Model
             "config.js"
         };
 
-        public async Task CheckSetupAsync()
-        {
-            GameModel game = new GameModel();
-
-            /*if (!Directory.Exists(_basePath + "\\thcrap"))
-            {
-                await Task.Run(() => {
-                    Directory.CreateDirectory(_basePath + "\\thcrap");
-                    Directory.CreateDirectory(_basePath + "\\thcrap\\config");
-                    //new DownloadModel().DownloadLatestReleaseZipAsync("thpatch", "thcrap", _basePath + "\\thcrap").Wait();
-                });
-            }*/
-
-            game._thcrapFolder = _basePath + "\\thcrap";
-            game._thcrapConfigs = _basePath + "\\thcrap\\config";
-            game._thcrapLoader = _basePath + "\\thcrap\\bin\\thcrap_loader.exe";
-
-        }
-
         public void StartGame(string game, string config)
         {
             var processInfo = new ProcessStartInfo
@@ -80,9 +61,7 @@ namespace Universal_THCRAP_Launcher.MVVM.Model
                 {
                     try
                     {
-                        var allProcesses = Process.GetProcesses();
-
-                        if (allProcesses.Any(p => p.ProcessName.Equals(exeName, StringComparison.OrdinalIgnoreCase)))
+                        if (Process.GetProcesses().Any(p => p.ProcessName.Equals(exeName, StringComparison.OrdinalIgnoreCase)))
                             return true;
                     }
                     catch (Exception ex)
@@ -121,14 +100,14 @@ namespace Universal_THCRAP_Launcher.MVVM.Model
                 string combinedPath = Path.Combine(_thcrapFolder, path);
                 string resolvedPath = Path.GetFullPath(combinedPath);
 
-                if (!File.Exists(resolvedPath))
-                    throw new FileNotFoundException("File not found", resolvedPath);
+                if (!Directory.Exists(resolvedPath))
+                    throw new DirectoryNotFoundException("Directory not found");
 
                 return resolvedPath;
             }
         }
 
-        // Should get the stringDef location automatically, remove later
+        // Should get the stringDef location automatically, rewrite later
         public async Task<string> IDtoFullNameAsync(string gameID, string stringDefsPath)
         {
             JObject jsonObject = await JsonReaderAsync(_basePath + stringDefsPath);
@@ -168,23 +147,34 @@ namespace Universal_THCRAP_Launcher.MVVM.Model
             return jsonObject.Properties().Where(prop => !prop.Value.ToString().Contains(custom)).Select(prop => prop.Value.ToString()).ToList();
         }
 
+        // CreateBitmapSourceFromHIcon is a very expensive call,
+        // should be called early on to avoid the app from freezing
         public ImageSource GameImage(string filePath, string gameID)
         {
-            ImageSource gameIcon;
-
             string updatedPath = filePath.Replace("vpatch.exe", $"{gameID}.exe");
 
             if (gameID == "th06")
                 updatedPath = updatedPath.Replace($"{gameID}.exe", "/東方紅魔郷.exe");
 
             Icon icon = Icon.ExtractAssociatedIcon(updatedPath);
+            if (icon == null)
+                return null;
 
-            gameIcon = Imaging.CreateBitmapSourceFromHIcon(icon.Handle, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
+            ImageSource gameIcon = Imaging.CreateBitmapSourceFromHIcon(
+                icon.Handle,
+                Int32Rect.Empty,
+                BitmapSizeOptions.FromEmptyOptions());
+
+            if (gameIcon.CanFreeze)
+                gameIcon.Freeze(); // Makes it thread-safe
+
+            icon.Dispose(); // Clean up unmanaged resources
 
             return gameIcon;
         }
 
-        //Helper Function
+
+        // Helper Function
         private async Task<JObject> JsonReaderAsync(string filePath)
         {
             try

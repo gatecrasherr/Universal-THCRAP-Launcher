@@ -5,6 +5,7 @@ using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using Universal_THCRAP_Launcher.MVVM.ViewModel.Service;
 
 namespace Universal_THCRAP_Launcher
 {
@@ -13,5 +14,11 @@ namespace Universal_THCRAP_Launcher
     /// </summary>
     public partial class App : Application
     {
+        public static MainWindow MainAppWindow => Current.MainWindow as MainWindow;
+
+        protected override void OnStartup(StartupEventArgs e)
+        {
+            ShutdownMode = ShutdownMode.OnMainWindowClose;
+        }
     }
 }

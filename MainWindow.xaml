@@ -9,7 +9,7 @@
         mc:Ignorable="d" WindowStyle="None" FontFamily="pack://application:,,,/Resources/#Inter Light"
         Title="Universal THCRAP Launcher" Background="Transparent"
         Height="600" Width="930" AllowsTransparency="True"
-        Loaded="Window_Loaded">
+        Loaded="Window_Loaded" WindowStartupLocation="CenterOwner">
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
     </Window.Resources>
@@ -93,30 +93,62 @@
                             </Expander>
                         </StackPanel>
                     </ScrollViewer>
+                    
+                    <!-- Welcome Screen -->
+                    <Grid Grid.Column="0" 
+                        x:Name="WelcomeOverlay">
+                        <Border Background="#24282B" 
+                            Width="400" 
+                            Height="120"
+                            HorizontalAlignment="Center" 
+                            VerticalAlignment="Center"
+                            BorderBrush="#3C3C3C" 
+                            BorderThickness="1">
+                            <Border Background="#1A1A1A">
+                                <StackPanel HorizontalAlignment="Center" 
+                                    VerticalAlignment="Center" 
+                                    Margin="20">
+                                    <TextBlock Text="Welcome!" 
+                                       FontSize="24" 
+                                       FontWeight="Bold" 
+                                       Foreground="White" 
+                                       HorizontalAlignment="Center" 
+                                       Margin="0,0,0,10"/>
+
+                                    <TextBlock Text="Click on ''Instances'' to get started." 
+                                        FontSize="16" 
+                                        Foreground="#A2A3A4" 
+                                        HorizontalAlignment="Center" 
+                                        TextAlignment="Center" 
+                                        Margin="0,0,0,0"/>
+                                </StackPanel>
+                            </Border>
+                        </Border>
+                    </Grid>
 
                     <!-- Ugly piece of code I'm not proud of. Everything should be simple enough to understand, apart from the Tag. It's used for the Hover effect. -->
                     <Grid Grid.Column="1" Background="#1A1A1A" Margin="0,10,20,10">
                         <StackPanel VerticalAlignment="Top" HorizontalAlignment="Center" Margin="0,30,0,0" Visibility="{Binding IsGameSelected, Converter={StaticResource BooleanToVisibilityConverter}}">
                             <Image Source="{Binding SelectedGameIcon}" Width="190" Height="100" Margin="0,0,0,10"/>
                             <TextBlock Text="{Binding SelectedGameTitle}" 
-                           Foreground="White" 
-                           FontSize="16" 
-                           FontWeight="Bold" 
-                           HorizontalAlignment="Center" 
-                           Margin="0,4,0,8" 
-                           TextWrapping="Wrap" MaxWidth="190"
-                           TextAlignment="Center"/>
+                               Foreground="White" 
+                               FontSize="16" 
+                               FontWeight="Bold" 
+                               HorizontalAlignment="Center" 
+                               Margin="0,4,0,8" 
+                               TextWrapping="Wrap" MaxWidth="190"
+                               TextAlignment="Center"/>
 
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,2,0,0">
                                 <Button Content="Launch" Command="{Binding LaunchGameCommand}" Style="{StaticResource MainButtonStyle}" 
-                                Background="#388E3C" Tag="#43A047" Foreground="#111111" Width="154" Height="40" FontWeight="Bold" FontSize="24" Margin="0,10,0,0"/>
+                                    Background="#388E3C" Tag="#43A047" Foreground="#111111" Width="154" Height="40" FontWeight="Bold" FontSize="24" Margin="0,10,0,0"/>
 
                                 <Button Content="&#xE713;" Tag="#3C3C3C" Style="{StaticResource MainButtonStyle}"
-                                FontFamily="Segoe MDL2 Assets" Width="30" Height="40" Margin="6,10,0,0"/>
+                                    FontFamily="Segoe MDL2 Assets" Width="30" Height="40" Margin="6,10,0,0"/>
                             </StackPanel>
 
                             <Button Style="{StaticResource MainButtonStyle}" Background="Transparent" Width="190" Height="30" Tag="#3C3C3C"
-                            Click="ConfigButton_Click" ContextMenuOpening="Config_ContextMenuOpening" Margin="0,8,0,0">
+                                Click="ConfigButton_Click" ContextMenuOpening="Config_ContextMenuOpening" Margin="0,8,0,0">
                                 <Grid Width="176">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*"/>
@@ -182,10 +214,13 @@
                 </Grid>
 
                 <!-- Loading Screen -->
+                <!-- Since there is loading logic now,
+                     comment out the Grid below if you want to see
+                     how the MainWindow actually looks like. -->
                 <Grid Grid.RowSpan="4" Grid.Row="1"
-                Panel.ZIndex="1000"
-                Visibility="{Binding LoadingViewModel.IsLoading, Converter={StaticResource BooleanToVisibilityConverter}}"
-                Opacity="{Binding LoadingViewModel.Opacity}">
+                    Panel.ZIndex="1000"
+                    Visibility="{Binding LoadingViewModel.IsLoading, Converter={StaticResource BooleanToVisibilityConverter}}"
+                    Opacity="{Binding LoadingViewModel.Opacity}">
                     <view:LoadingScreen DataContext="{Binding LoadingViewModel}"/>
                 </Grid>
 
