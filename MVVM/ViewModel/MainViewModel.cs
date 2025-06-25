@@ -169,14 +169,9 @@ namespace Universal_THCRAP_Launcher.MVVM.ViewModel
             {
                 //AddCategory("Test Category");
 
-                // Should be moved to a config file later,
-                // as to allow the user to have a custom path for THCRAP
-
                 string filePath = "\\thcrap\\config\\games.js";
                 string strDef = "\\thcrap\\repos\\thpatch\\lang_en\\stringdefs.js";
                 string custom = "custom";
-
-                // Ugly, but it works
 
                 int num = await Task.Run(() => gameModel.GameCount(filePath, custom));
                 List<string> paths = await Task.Run(() => gameModel.GamePathAsync(filePath, custom));
@@ -189,16 +184,14 @@ namespace Universal_THCRAP_Launcher.MVVM.ViewModel
 
                 for (int i = 0; i < num; i++)
                 {
-                    string iconPath = gameModel.ResolvePath(paths[i]);
-
-                    Debug.WriteLine(configs[i]);
+                    string currentGamePath = gameModel.ResolvePath(paths[i]);
 
                     var gameItem = new GameItem
                     {
                         DisplayTitle = await gameModel.IDtoFullNameAsync(id[i], strDef),
                         GameId = id[i],
-                        GamePath = gameModel.ResolvePath(paths[i]),
-                        DisplayIcon = await Task.Run(() => gameModel.GameImage(iconPath, id[i]))
+                        GamePath = currentGamePath,
+                        DisplayIcon = await Task.Run(() => gameModel.GameImage(currentGamePath, id[i]))
                     };
 
                     gameItem.GameSelected += GameItem_GameSelected;

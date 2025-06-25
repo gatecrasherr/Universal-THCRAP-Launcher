@@ -16,18 +16,18 @@ namespace Universal_THCRAP_Launcher.MVVM.Model
             return true;
         }
 
+        // Would make more sense to put this inside the ConfigModel, but I would rather keep it as clean as possible
         public bool ConfigCheck()
         {
-            // Would make more sense to put this inside the ConfigModel,
-            // but I would rather keep it as clean as possible, for now.
-
-            string roamingPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+            string roamingPath = AppDomain.CurrentDomain.BaseDirectory + "\\thcrap\\config";
 
             if (!directoryExists(roamingPath + "\\thcrap\\config\\"))
                 return false;
 
             return true;
         }
+
+        // Helper functions
 
         private bool directoryExists(string filePath)
         {

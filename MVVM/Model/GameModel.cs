@@ -148,9 +148,32 @@ namespace Universal_THCRAP_Launcher.MVVM.Model
         }
 
         // CreateBitmapSourceFromHIcon is a very expensive call,
-        // should be called early on to avoid the app from freezing
+        // should be cached to reduce the number of calls
         public ImageSource GameImage(string filePath, string gameID)
         {
+            string possiblePngPath = Path.Combine(_basePath, "thcrap", "config", "UTL", "cache", $"{gameID}.png");
+
+            if (File.Exists(possiblePngPath))
+            {
+                try
+                {
+                    var image = new BitmapImage();
+                    image.BeginInit();
+                    image.UriSource = new Uri(possiblePngPath, UriKind.Absolute);
+                    image.CacheOption = BitmapCacheOption.OnLoad;
+                    image.EndInit();
+
+                    if (image.CanFreeze)
+                        image.Freeze();
+
+                    return image;
+                }
+                catch
+                {
+                    Debug.WriteLine($"Failed to load cached image for {gameID} from {possiblePngPath}.");
+                }
+            }
+
             string updatedPath = filePath.Replace("vpatch.exe", $"{gameID}.exe");
 
             if (gameID == "th06")
@@ -160,21 +183,32 @@ namespace Universal_THCRAP_Launcher.MVVM.Model
             if (icon == null)
                 return null;
 
-            ImageSource gameIcon = Imaging.CreateBitmapSourceFromHIcon(
-                icon.Handle,
-                Int32Rect.Empty,
-                BitmapSizeOptions.FromEmptyOptions());
+            ImageSource gameIcon = Imaging.CreateBitmapSourceFromHIcon(icon.Handle, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
 
             if (gameIcon.CanFreeze)
-                gameIcon.Freeze(); // Makes it thread-safe
+                gameIcon.Freeze();
 
-            icon.Dispose(); // Clean up unmanaged resources
+            icon.Dispose();
+
+            CacheImage(gameIcon, gameID);
 
             return gameIcon;
         }
 
 
         // Helper Function
+
+        private static void CacheImage(ImageSource img, string gameID)
+        {
+            string savePath = Path.Combine(_basePath, "thcrap", "config", "UTL", "cache", $"{gameID}.png");
+
+            var encoder = new PngBitmapEncoder();
+            encoder.Frames.Add(BitmapFrame.Create(img as BitmapSource));
+
+            using (var fileStream = new FileStream(savePath, FileMode.Create))
+                encoder.Save(fileStream);
+        }
+
         private async Task<JObject> JsonReaderAsync(string filePath)
         {
             try
