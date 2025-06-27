@@ -1,5 +1,6 @@
 ﻿using Microsoft.WindowsAPICodePack.Dialogs;
 using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -13,14 +14,17 @@ using Universal_THCRAP_Launcher.Core;
 using Universal_THCRAP_Launcher.MVVM.Model;
 using Universal_THCRAP_Launcher.MVVM.View;
 using Universal_THCRAP_Launcher.MVVM.ViewModel.Service;
+using Newtonsoft.Json.Linq;
 
 namespace Universal_THCRAP_Launcher.MVVM.ViewModel
 {
     class MainViewModel : ObservableObject
     {
-        GameModel gameModel = new GameModel();
+        private GameModel gameModel = new GameModel();
+        private ConfigModel configModel = new ConfigModel();
         private LoadingScreenViewModel _loadingScreenViewModel;
         private bool _contentLoaded = false;
+        private readonly Dictionary<string, WrapPanel> categoryPanels = new Dictionary<string, WrapPanel>();
 
         private string _selectedGameTitle;
         private ImageSource _selectedGameIcon;
@@ -121,7 +125,7 @@ namespace Universal_THCRAP_Launcher.MVVM.ViewModel
 
             string selectedGamePath = GetGamePath(SelectedPath);
 
-            if (System.IO.Directory.Exists(selectedGamePath))
+            if (Directory.Exists(selectedGamePath))
                 Process.Start("explorer.exe", selectedGamePath);
             else
                 Console.WriteLine("Directory not found.");
@@ -157,17 +161,60 @@ namespace Universal_THCRAP_Launcher.MVVM.ViewModel
 
             LoadingViewModel.FadeOutAsync();
 
-            await LoadAppContent();
+            if (!LoadingViewModel.foundConfig)
+                await LoadFromGamesJSAsync();
+            else
+                await LoadFromConfigAsync();
 
             ContentLoaded = true;
         }
 
-
-        private async Task LoadAppContent()
+        private async Task LoadFromConfigAsync()
         {
             if (Application.Current.MainWindow is MainWindow mainWindow)
             {
-                //AddCategory("Test Category");
+                string configPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "thcrap", "config", "UTL", "config", "config.json");
+                string strDef = "\\thcrap\\repos\\thpatch\\lang_en\\stringdefs.js"; // change this perhaps?
+
+                string json = File.ReadAllText(configPath);
+                JObject rootObject = JObject.Parse(json);
+
+                foreach (var property in rootObject.Properties())
+                {
+                    string gameID = property.Name;
+                    JObject gameData = property.Value as JObject;
+
+                    string title = gameData["gameTitle"]?.ToString() ?? "Unknown Game";
+                    string path = gameData["path"]?.ToString() ?? string.Empty;
+                    string category = gameData["category"]?.ToString() ?? "Uncategorized";
+                    string config = gameData["config"]?.ToString() ?? "ERR";
+
+                    SelectedConfig = config;
+
+                    if (!categoryPanels.ContainsKey(category))
+                        AddCategory(category);
+
+                    var gameItem = new GameItem
+                    {
+                        DisplayTitle = await gameModel.IDtoFullNameAsync(gameID, strDef),
+                        GameId = gameID,
+                        GamePath = gameModel.ResolvePath(path),
+                        DisplayIcon = await Task.Run(() => gameModel.GameImage(path, gameID))
+                    };
+
+                    gameItem.GameSelected += GameItem_GameSelected;
+                    gameItem.MouseDoubleClick += GameItem_MouseDoubleClick;
+
+                    categoryPanels[category].Children.Add(gameItem);
+                }
+            }
+        }
+
+        private async Task LoadFromGamesJSAsync()
+        {
+            if (Application.Current.MainWindow is MainWindow mainWindow)
+            {
+                AddCategory("Uncategorized");
 
                 string filePath = "\\thcrap\\config\\games.js";
                 string strDef = "\\thcrap\\repos\\thpatch\\lang_en\\stringdefs.js";
@@ -178,8 +225,6 @@ namespace Universal_THCRAP_Launcher.MVVM.ViewModel
                 List<string> id = await Task.Run(() => gameModel.GameID(filePath, custom));
                 List<string> configs = await Task.Run(() => gameModel.ConfigListAsync());
 
-                // For now, defualt to the first config,
-                // and later on, find the last selected one
                 SelectedConfig = configs[0];
 
                 for (int i = 0; i < num; i++)
@@ -198,9 +243,9 @@ namespace Universal_THCRAP_Launcher.MVVM.ViewModel
 
                     gameItem.MouseDoubleClick += GameItem_MouseDoubleClick;
 
-                    // Change it from the hardcoded WrapPanel, through a config
+                    gameModel.GameToConfig(gameItem, SelectedConfig, "Uncategorized");
 
-                    mainWindow.UncategorizedWrapPanel.Children.Add(gameItem);
+                    categoryPanels["Uncategorized"].Children.Add(gameItem);
                 }
             }
         }
@@ -227,8 +272,7 @@ namespace Universal_THCRAP_Launcher.MVVM.ViewModel
 
         private async void GameItem_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            if (sender is GameItem gameItem)
-                await LaunchGameAsync();
+            await LaunchGameAsync();
         }
 
         public async Task<IEnumerable<MenuItem>> ConfigMenuItemsAsync()
@@ -271,6 +315,10 @@ namespace Universal_THCRAP_Launcher.MVVM.ViewModel
         {
             if (Application.Current.MainWindow is MainWindow mainWindow)
             {
+                // Can't have two panels with the same name
+                if (categoryPanels.ContainsKey(categoryName))
+                    return;
+
                 Expander newExpander = new Expander
                 {
                     Header = categoryName,
@@ -281,6 +329,7 @@ namespace Universal_THCRAP_Launcher.MVVM.ViewModel
 
                 var newWrapPanel = new WrapPanel
                 {
+                    Name = $"{categoryName}",
                     Orientation = Orientation.Horizontal,
                     HorizontalAlignment = HorizontalAlignment.Left
                 };
@@ -290,6 +339,10 @@ namespace Universal_THCRAP_Launcher.MVVM.ViewModel
                 newExpander.Content = newWrapPanel;
 
                 mainWindow.MainStackPanel.Children.Add(newExpander);
+
+                categoryPanels[categoryName] = newWrapPanel;
+
+                mainWindow.UpdateWelcomeOverlayVisibility();
             }
         }
 

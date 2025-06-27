@@ -11,6 +11,7 @@ using Universal_THCRAP_Launcher.MVVM.Model;
 using Universal_THCRAP_Launcher.MVVM.ViewModel.Service;
 using MessageBox = System.Windows.MessageBox;
 using Microsoft.WindowsAPICodePack.Dialogs;
+using System.Diagnostics;
 
 namespace Universal_THCRAP_Launcher.MVVM.ViewModel
 {
@@ -19,6 +20,7 @@ namespace Universal_THCRAP_Launcher.MVVM.ViewModel
         private string _loadingText = "Loading...";
         private bool _isLoading = true;
         private double _opacity = 1.0;
+        public bool foundConfig = true;
 
         private LoadModel _loadModel = new LoadModel();
         private DownloadModel _downloadModel = new DownloadModel();
@@ -42,19 +44,34 @@ namespace Universal_THCRAP_Launcher.MVVM.ViewModel
             set => SetProperty(ref _opacity, value);
         }
 
+        public string VersionNumber
+        {
+            get
+            {
+                var version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
+                if (version.Build != 0)
+                    return $"THCRAP Launcher {version.Major}.{version.Minor}.{version.Build}";
+                return $"THCRAP Launcher {version.Major}.{version.Minor}";
+            }
+        }
+
         public async Task InitializeAsync()
         {
-            StatusText = "Checking UTL config...";
-            if (_loadModel.ConfigCheck() == false)
+            StatusText = "Finding the UTL config folder...";
+
+            if (_loadModel.ConfigFolderCheck() == false)
             {
                 StatusText = "Creating config folder...";
+
                 _configModel.CreateConfig();
             }
+
             if (_loadModel.SanityCheck() == false)
             {
                 DialogService _dialogService = DialogService.Instance;
 
                 StatusText = "Missing THCRAP installation!";
+
                 var result = _dialogService.ShowInstallationChoiceDialog();
 
                 if (result == InstallationChoiceWindow.DialogueResult.DownloadLatest)
@@ -70,6 +87,14 @@ namespace Universal_THCRAP_Launcher.MVVM.ViewModel
                     string selectedPath = selectDirectory();
                 }
             }
+
+            StatusText = "Loading content...";
+
+            if(_loadModel.ConfigCheck() == false)
+            {
+                foundConfig = false;
+            }
+
             StatusText = "Ready!";
         }
 

@@ -56,9 +56,9 @@
                 <Grid Background="#111111" Grid.Row="1" x:Name="ButtonContainerGrid">
                     <Border BorderBrush="#1A1A1A" BorderThickness="0,0,0,1"/>
                     <StackPanel x:Name="TopBarPanel" Orientation="Horizontal"
-                    HorizontalAlignment="Left" VerticalAlignment="Center">
+                        HorizontalAlignment="Left" VerticalAlignment="Center">
                         <Button Style="{StaticResource NavButtonStyle}" Width="100" Height="40" Margin="10,0,0,0"
-                        Click="InstancesButton_Click" ContextMenuOpening="InstancesButton_ContextMenuOpening">
+                            Click="InstancesButton_Click" ContextMenuOpening="InstancesButton_ContextMenuOpening">
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
                                 <TextBlock Text="Instances" VerticalAlignment="Center" Margin="0,0,5,0"/>
                                 <TextBlock Text="&#xE70D;" FontFamily="Segoe MDL2 Assets" FontSize="14" VerticalAlignment="Center"/>
@@ -80,18 +80,17 @@
 
                 
                 <!-- Main area -->
-                <Grid Background="#111111" Grid.Row="2">
+                <Grid Background="#111111" Grid.Row="2" Margin="0,0,0,10">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="250"/>
                     </Grid.ColumnDefinitions>
-                    <ScrollViewer Grid.Column="0" VerticalScrollBarVisibility="Auto" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" PreviewMouseDown="StackMouseDown">
-                        <StackPanel x:Name="MainStackPanel">
-                            <!-- Temp hardcoded category, will remove later -->
-                            <Expander Header="Uncategorized" Foreground="#A2A3A4" Style="{StaticResource CategoryStyle}" IsExpanded="True">
-                                <WrapPanel x:Name="UncategorizedWrapPanel" Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                            </Expander>
-                        </StackPanel>
+                    <ScrollViewer Grid.Column="0" VerticalScrollBarVisibility="Auto" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" PreviewMouseDown="StackMouseDown" PreviewMouseRightButtonDown="PreviewMouseRightButtonDown">
+                        <ScrollViewer.Resources>
+                            <Style TargetType="ScrollBar" BasedOn="{StaticResource CustomScrollBar}"/>
+                        </ScrollViewer.Resources>
+
+                        <StackPanel x:Name="MainStackPanel"/>
                     </ScrollViewer>
                     
                     <!-- Welcome Screen -->
@@ -127,7 +126,7 @@
                     </Grid>
 
                     <!-- Ugly piece of code I'm not proud of. Everything should be simple enough to understand, apart from the Tag. It's used for the Hover effect. -->
-                    <Grid Grid.Column="1" Background="#1A1A1A" Margin="0,10,20,10">
+                    <Grid Grid.Column="1" Background="#1A1A1A" Margin="0,10,20,0">
                         <StackPanel VerticalAlignment="Top" HorizontalAlignment="Center" Margin="0,30,0,0" Visibility="{Binding IsGameSelected, Converter={StaticResource BooleanToVisibilityConverter}}">
                             <Image Source="{Binding SelectedGameIcon}" Width="190" Height="100" Margin="0,0,0,10"/>
                             <TextBlock Text="{Binding SelectedGameTitle}" 
@@ -207,15 +206,14 @@
                 <!-- Footer -->
                 <Grid Grid.Row="3">
                     <TextBlock x:Name="footerTextBlock" Foreground="White" Margin="6,0,0,0"
-                           Text="THCRAP Launcher 2.0" VerticalAlignment="Center"/>
+                           Text="{Binding LoadingViewModel.VersionNumber}" VerticalAlignment="Center"/>
                     <TextBlock x:Name="playtime" Foreground="White" Margin="0,0,6,0"
                            Text="Total Playtime: 4D 11H 20S" 
                            VerticalAlignment="Center" HorizontalAlignment="Right"/>
                 </Grid>
 
                 <!-- Loading Screen -->
-                <!-- Since there is loading logic now,
-                     comment out the Grid below if you want to see
+                <!-- Since there is loading logic now, comment out the Grid below if you want to see
                      how the MainWindow actually looks like. -->
                 <Grid Grid.RowSpan="4" Grid.Row="1"
                     Panel.ZIndex="1000"

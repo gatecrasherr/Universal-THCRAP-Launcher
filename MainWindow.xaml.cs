@@ -37,8 +37,8 @@ namespace Universal_THCRAP_Launcher
             MaxWidth = SystemParameters.WorkArea.Width + 12;
             NotificationService.Instance.Initialize(NotificationContainer);
             DialogService.Instance.Initialize(this);
-            UpdateWelcomeOverlayVisibility();
 
+            
 
             if (DataContext is MainViewModel vm)
             {
@@ -56,6 +56,11 @@ namespace Universal_THCRAP_Launcher
 
             if (DataContext is MainViewModel viewModel)
                 viewModel.UnselectGame();
+        }
+
+        private void PreviewMouseRightButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            e.Handled = true;
         }
 
         private void InstancesButton_Click(object sender, RoutedEventArgs e)
@@ -131,7 +136,7 @@ namespace Universal_THCRAP_Launcher
             }
         }
 
-        private void UpdateWelcomeOverlayVisibility()
+        public void UpdateWelcomeOverlayVisibility()
         {
             bool hasExpanders = MainStackPanel.Children.OfType<Expander>().Any();
 

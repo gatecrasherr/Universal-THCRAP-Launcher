@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -12,6 +13,7 @@ using System.Windows;
 using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using Universal_THCRAP_Launcher.MVVM.View;
 
 namespace Universal_THCRAP_Launcher.MVVM.Model
 {
@@ -21,6 +23,7 @@ namespace Universal_THCRAP_Launcher.MVVM.Model
         private string _thcrapFolder = _basePath + "\\thcrap";
         private string _thcrapConfigs = _basePath + "\\thcrap\\config";
         private string _thcrapLoader = _basePath + "\\thcrap\\bin\\thcrap_loader.exe";
+        private string _UTLConfig = _basePath + "\\thcrap\\config\\UTL\\config\\config.json";
 
         private List<string> _excludedConfigs = new List<string>
         {
@@ -107,7 +110,6 @@ namespace Universal_THCRAP_Launcher.MVVM.Model
             }
         }
 
-        // Should get the stringDef location automatically, rewrite later
         public async Task<string> IDtoFullNameAsync(string gameID, string stringDefsPath)
         {
             JObject jsonObject = await JsonReaderAsync(_basePath + stringDefsPath);
@@ -119,9 +121,8 @@ namespace Universal_THCRAP_Launcher.MVVM.Model
 
                 return "Unknown Game Name";
             }
-            catch (Exception ex)
+            catch
             {
-                Console.WriteLine(ex.Message);
                 return "Unknown Game Name";
             }
         }
@@ -148,30 +149,23 @@ namespace Universal_THCRAP_Launcher.MVVM.Model
         }
 
         // CreateBitmapSourceFromHIcon is a very expensive call,
-        // should be cached to reduce the number of calls
+        // should be cached to reduce the number of calls to it
         public ImageSource GameImage(string filePath, string gameID)
         {
             string possiblePngPath = Path.Combine(_basePath, "thcrap", "config", "UTL", "cache", $"{gameID}.png");
 
             if (File.Exists(possiblePngPath))
             {
-                try
-                {
-                    var image = new BitmapImage();
-                    image.BeginInit();
-                    image.UriSource = new Uri(possiblePngPath, UriKind.Absolute);
-                    image.CacheOption = BitmapCacheOption.OnLoad;
-                    image.EndInit();
+                var image = new BitmapImage();
+                image.BeginInit();
+                image.UriSource = new Uri(possiblePngPath, UriKind.Absolute);
+                image.CacheOption = BitmapCacheOption.OnLoad;
+                image.EndInit();
 
-                    if (image.CanFreeze)
-                        image.Freeze();
+                if (image.CanFreeze)
+                    image.Freeze();
 
-                    return image;
-                }
-                catch
-                {
-                    Debug.WriteLine($"Failed to load cached image for {gameID} from {possiblePngPath}.");
-                }
+                return image;
             }
 
             string updatedPath = filePath.Replace("vpatch.exe", $"{gameID}.exe");
@@ -180,6 +174,7 @@ namespace Universal_THCRAP_Launcher.MVVM.Model
                 updatedPath = updatedPath.Replace($"{gameID}.exe", "/東方紅魔郷.exe");
 
             Icon icon = Icon.ExtractAssociatedIcon(updatedPath);
+
             if (icon == null)
                 return null;
 
@@ -195,6 +190,24 @@ namespace Universal_THCRAP_Launcher.MVVM.Model
             return gameIcon;
         }
 
+        public void GameToConfig(GameItem game, string config, string category)
+        {
+            var existingJson = File.ReadAllText(_UTLConfig);
+            JObject rootObject = JObject.Parse(existingJson);
+
+            var gameObject = new JObject
+            {
+                ["gameTitle"] = game.DisplayTitle,
+                ["customName"] = null,
+                ["gamePath"] = game.GamePath,
+                ["config"] = config,
+                ["category"] = category
+            };
+
+            rootObject[game.GameId] = gameObject;
+
+            File.WriteAllText(_UTLConfig, rootObject.ToString(Formatting.Indented));
+        }
 
         // Helper Function
 
