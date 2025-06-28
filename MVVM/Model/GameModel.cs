@@ -103,9 +103,6 @@ namespace Universal_THCRAP_Launcher.MVVM.Model
                 string combinedPath = Path.Combine(_thcrapFolder, path);
                 string resolvedPath = Path.GetFullPath(combinedPath);
 
-                if (!Directory.Exists(resolvedPath))
-                    throw new DirectoryNotFoundException("Directory not found");
-
                 return resolvedPath;
             }
         }

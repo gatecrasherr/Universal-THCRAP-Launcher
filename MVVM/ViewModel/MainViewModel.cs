@@ -174,7 +174,7 @@ namespace Universal_THCRAP_Launcher.MVVM.ViewModel
             if (Application.Current.MainWindow is MainWindow mainWindow)
             {
                 string configPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "thcrap", "config", "UTL", "config", "config.json");
-                string strDef = "\\thcrap\\repos\\thpatch\\lang_en\\stringdefs.js"; // change this perhaps?
+                string strDef = "\\thcrap\\repos\\thpatch\\lang_en\\stringdefs.js"; // change this depending on the language perhaps?
 
                 string json = File.ReadAllText(configPath);
                 JObject rootObject = JObject.Parse(json);
@@ -240,7 +240,6 @@ namespace Universal_THCRAP_Launcher.MVVM.ViewModel
                     };
 
                     gameItem.GameSelected += GameItem_GameSelected;
-
                     gameItem.MouseDoubleClick += GameItem_MouseDoubleClick;
 
                     gameModel.GameToConfig(gameItem, SelectedConfig, "Uncategorized");
@@ -298,6 +297,8 @@ namespace Universal_THCRAP_Launcher.MVVM.ViewModel
                     Command = new RelayCommand(() =>
                     {
                         SelectedConfig = configs[capturedIndex];
+                        if (!string.IsNullOrEmpty(SelectedID))
+                            LastConfigToJSON(SelectedID, SelectedConfig);
                     })
                 };
 
@@ -348,6 +349,20 @@ namespace Universal_THCRAP_Launcher.MVVM.ViewModel
 
         // Helper functions
 
+        private void LastConfigToJSON(string gameID, string configName)
+        {
+            string configPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "thcrap", "config", "UTL", "config", "config.json");
+
+            var configJson = File.ReadAllText(configPath);
+            var rootObject = JObject.Parse(configJson);
+
+            if (rootObject[gameID] is JObject gameObj)
+            {
+                gameObj["config"] = configName;
+                File.WriteAllText(configPath, rootObject.ToString());
+            }
+        }
+
         private string GetGamePath(string path)
         {
             if (path.EndsWith(".exe"))
@@ -373,6 +388,8 @@ namespace Universal_THCRAP_Launcher.MVVM.ViewModel
 
         private void SelectGameItem(GameItem item, GameSelectedEventArgs e)
         {
+            string configPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "thcrap", "config", "UTL", "config", "config.json");
+
             item.DisplayIconOpacity = 0.3f;
             item.DisplayBackgroundColor = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1F485E"));
 
@@ -381,6 +398,12 @@ namespace Universal_THCRAP_Launcher.MVVM.ViewModel
             SelectedPath = item.GamePath;
             SelectedID = item.GameId;
             IsGameSelected = true;
+
+            var configJson = File.ReadAllText(configPath);
+            var rootObject = JObject.Parse(configJson);
+
+            if (rootObject[item.GameId] is JObject gameObj)
+                SelectedConfig = gameObj["config"]?.ToString() ?? "ERR";
         }
 
         private void ResetGameItem(GameItem item)

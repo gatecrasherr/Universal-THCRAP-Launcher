@@ -92,6 +92,7 @@ namespace Universal_THCRAP_Launcher.MVVM.ViewModel
 
             if(_loadModel.ConfigCheck() == false)
             {
+                // We do this to convert games.js to config.json
                 foundConfig = false;
             }
 

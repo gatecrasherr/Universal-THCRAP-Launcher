@@ -61,7 +61,7 @@ namespace Universal_THCRAP_Launcher.MVVM.Model
             }
             catch
             {
-                Console.WriteLine("Damn");
+                Console.WriteLine("Download failed.");
             }
         }
     }
