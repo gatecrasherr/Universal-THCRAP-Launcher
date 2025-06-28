@@ -1,0 +1,3 @@
+[submodule "thcrap_cs_lib"]
+	path = thcrap_cs_lib
+	url = https://github.com/thpatch/thcrap_cs_lib.git
