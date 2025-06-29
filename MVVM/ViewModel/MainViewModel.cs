@@ -15,6 +15,7 @@ using Universal_THCRAP_Launcher.MVVM.Model;
 using Universal_THCRAP_Launcher.MVVM.View;
 using Universal_THCRAP_Launcher.MVVM.ViewModel.Service;
 using Newtonsoft.Json.Linq;
+using thcrap_cs_lib;
 
 namespace Universal_THCRAP_Launcher.MVVM.ViewModel
 {
@@ -94,6 +95,7 @@ namespace Universal_THCRAP_Launcher.MVVM.ViewModel
 
         private async Task LaunchGameAsync()
         {
+
             if(!CanLaunchGame())
                 return;
 

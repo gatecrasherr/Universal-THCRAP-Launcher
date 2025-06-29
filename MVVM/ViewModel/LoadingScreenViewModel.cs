@@ -58,14 +58,12 @@ namespace Universal_THCRAP_Launcher.MVVM.ViewModel
         public async Task InitializeAsync()
         {
             StatusText = "Finding the UTL config folder...";
-
             if (_loadModel.ConfigFolderCheck() == false)
             {
                 StatusText = "Creating config folder...";
 
                 _configModel.CreateConfig();
             }
-
             if (_loadModel.SanityCheck() == false)
             {
                 DialogService _dialogService = DialogService.Instance;
@@ -87,15 +85,12 @@ namespace Universal_THCRAP_Launcher.MVVM.ViewModel
                     string selectedPath = selectDirectory();
                 }
             }
-
             StatusText = "Loading content...";
-
             if(_loadModel.ConfigCheck() == false)
             {
                 // We do this to convert games.js to config.json
                 foundConfig = false;
             }
-
             StatusText = "Ready!";
         }
 
@@ -125,7 +120,7 @@ namespace Universal_THCRAP_Launcher.MVVM.ViewModel
                 }
                 else
                 {
-                    MessageBox.Show("Bro. Select something. #ChillaxBrah #PickSomethingBrah");
+                    MessageBox.Show("No directory was picked, shutting down.");
                     System.Windows.Application.Current.Shutdown();
                 }
 

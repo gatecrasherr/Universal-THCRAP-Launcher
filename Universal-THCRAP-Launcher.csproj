@@ -87,7 +87,7 @@
     </ApplicationDefinition>
     <Compile Include="Core\ObservableObject.cs" />
     <Compile Include="Core\RelayCommand.cs" />
-    <Compile Include="InstallationChoiceWindow.xaml.cs">
+    <Compile Include="MVVM\View\InstallationChoiceWindow.xaml.cs">
       <DependentUpon>InstallationChoiceWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="MVVM\Model\ConfigModel.cs" />
@@ -99,10 +99,10 @@
     <Compile Include="MVVM\ViewModel\NotificationViewModel.cs" />
     <Compile Include="MVVM\ViewModel\Service\DialogService.cs" />
     <Compile Include="MVVM\ViewModel\Service\NotificationService.cs" />
-    <Compile Include="SettingsWindow.xaml.cs">
+    <Compile Include="MVVM\View\SettingsWindow.xaml.cs">
       <DependentUpon>SettingsWindow.xaml</DependentUpon>
     </Compile>
-    <Page Include="InstallationChoiceWindow.xaml">
+    <Page Include="MVVM\View\InstallationChoiceWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -130,7 +130,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="SettingsWindow.xaml">
+    <Page Include="MVVM\View\SettingsWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -209,6 +209,12 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="icon.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="thcrap_cs_lib\thcrap_cs_lib.csproj">
+      <Project>{9e72079b-a115-40b8-9769-dbd22410a87b}</Project>
+      <Name>thcrap_cs_lib</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
