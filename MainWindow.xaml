@@ -94,8 +94,7 @@
                     </ScrollViewer>
                     
                     <!-- Welcome Screen -->
-                    <Grid Grid.Column="0" 
-                        x:Name="WelcomeOverlay">
+                    <Grid Grid.Column="0" x:Name="WelcomeOverlay">
                         <Border Background="#24282B" 
                             Width="400" 
                             Height="120"
@@ -127,83 +126,96 @@
 
                     <!-- Ugly piece of code I'm not proud of. Everything should be simple enough to understand, apart from the Tag. It's used for the Hover effect. -->
                     <Grid Grid.Column="1" Background="#1A1A1A" Margin="0,10,20,0">
-                        <StackPanel VerticalAlignment="Top" HorizontalAlignment="Center" Margin="0,30,0,0" Visibility="{Binding IsGameSelected, Converter={StaticResource BooleanToVisibilityConverter}}">
-                            <Image Source="{Binding SelectedGameIcon}" Width="190" Height="100" Margin="0,0,0,10"/>
-                            <TextBlock Text="{Binding SelectedGameTitle}" 
-                               Foreground="White" 
-                               FontSize="16" 
-                               FontWeight="Bold" 
-                               HorizontalAlignment="Center" 
-                               Margin="0,4,0,8" 
-                               TextWrapping="Wrap" MaxWidth="190"
-                               TextAlignment="Center"/>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
 
-                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,2,0,0">
-                                <Button Content="Launch" Command="{Binding LaunchGameCommand}" Style="{StaticResource MainButtonStyle}" 
-                                    Background="#388E3C" Tag="#43A047" Foreground="#111111" Width="154" Height="40" FontWeight="Bold" FontSize="24" Margin="0,10,0,0"/>
+                        <Grid Visibility="{Binding IsGameSelected, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
 
-                                <Button Content="&#xE713;" Tag="#3C3C3C" Style="{StaticResource MainButtonStyle}"
-                                    FontFamily="Segoe MDL2 Assets" Width="30" Height="40" Margin="6,10,0,0"/>
+                            <StackPanel Grid.Row="0" VerticalAlignment="Top" HorizontalAlignment="Center" Margin="0,30,0,0">
+                                <Image Source="{Binding SelectedGameIcon}" Width="190" Height="100" Margin="0,0,0,10"/>
+                                <TextBlock Text="{Binding SelectedGameTitle}" 
+                                    Foreground="White" 
+                                    FontSize="16" 
+                                    FontWeight="Bold" 
+                                    HorizontalAlignment="Center" 
+                                    Margin="0,4,0,8" 
+                                    TextWrapping="Wrap" MaxWidth="190"
+                                    TextAlignment="Center"/>
                             </StackPanel>
 
-                            <Button Style="{StaticResource MainButtonStyle}" Background="Transparent" Width="190" Height="30" Tag="#3C3C3C"
-                                Click="ConfigButton_Click" ContextMenuOpening="Config_ContextMenuOpening" Margin="0,8,0,0">
-                                <Grid Width="176">
+                            <StackPanel Grid.Row="2" VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="0,2,0,0">
+
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,2,0,0">
+                                    <Button Content="Launch" Command="{Binding LaunchGameCommand}" Style="{StaticResource MainButtonStyle}" 
+                                        Background="#388E3C" Tag="#43A047" Foreground="#111111" Width="154" Height="40" FontWeight="Bold" FontSize="24" Margin="0,10,0,0"/>
+                                    <Button Content="&#xE713;" Tag="#3C3C3C" Style="{StaticResource MainButtonStyle}"
+                                        FontFamily="Segoe MDL2 Assets" Width="30" Height="40" Margin="6,10,0,0"/>
+                                </StackPanel>
+
+                                <Button Style="{StaticResource MainButtonStyle}" Background="Transparent" Width="190" Height="30" Tag="#3C3C3C"
+                                    Click="ConfigButton_Click" ContextMenuOpening="Config_ContextMenuOpening" Margin="0,8,0,0">
+                                    <Grid Width="176">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="{Binding SelectedConfig}" VerticalAlignment="Center" HorizontalAlignment="Left" Grid.Column="0"/>
+                                        <TextBlock Text="&#xE70D;" FontFamily="Segoe MDL2 Assets" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Right" Grid.Column="1"/>
+                                    </Grid>
+                                    <Button.ContextMenu>
+                                        <ContextMenu x:Name="ConfigContextMenu" HorizontalOffset="0" MaxHeight="180"/>
+                                    </Button.ContextMenu>
+                                </Button>
+
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,8,0,0">
+                                    <Button Content="&#xE70F;" Tag="#3C3C3C" Style="{StaticResource MainButtonStyle}"
+                                        Width="43" Height="30" FontFamily="Segoe MDL2 Assets" Click="RenameInstance"/>
+                                    <Button Content="&#xED25;" Command="{Binding OpenDirectory}" Tag="#3C3C3C" Style="{StaticResource MainButtonStyle}"
+                                        Width="43" Height="30" FontFamily="Segoe MDL2 Assets" Margin="6,0,0,0"/>
+                                    <Button Content="&#xE8EC;" Tag="#3C3C3C" Style="{StaticResource MainButtonStyle}"
+                                        Width="43" Height="30" FontFamily="Segoe MDL2 Assets" Click="ChangeCategory" Margin="6,0,0,0"/>
+                                    <Button Content="&#xE74D;" Background="#D32F2F" Tag="#E53935" Style="{StaticResource MainButtonStyle}"
+                                        Width="43" Height="30" FontFamily="Segoe MDL2 Assets" Click="DeleteInstance" Margin="6,0,0,0"/>
+                                </StackPanel>
+
+                                <Grid Margin="0,20,0,0">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+                                    
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Text="{Binding SelectedConfig}" VerticalAlignment="Center" HorizontalAlignment="Left" Grid.Column="0"/>
-                                    <TextBlock Text="&#xE70D;" FontFamily="Segoe MDL2 Assets" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Right" Grid.Column="1"/>
+
+                                    <TextBlock Text="Patches applied:" Foreground="White" FontSize="14" FontFamily="Inter" FontWeight="ExtraBold" Grid.Row="1" Grid.Column="0" Margin="0,0,10,8"/>
+                                    <TextBlock Text="5" Foreground="White" FontSize="14" Grid.Row="1" Grid.Column="1" Margin="10,0,0,8"/>
+
+                                    <TextBlock Text="Playtime:" Foreground="White" FontSize="14" FontFamily="Inter" FontWeight="ExtraBold" Grid.Row="2" Grid.Column="0" Margin="0,0,10,8"/>
+                                    <TextBlock Text="1D 5H 11S" Foreground="White" FontSize="14" Grid.Row="2" Grid.Column="1" Margin="10,0,0,8"/>
+
+                                    <TextBlock Text="# of Replays:" Foreground="White" FontSize="14" FontFamily="Inter" FontWeight="ExtraBold" Grid.Row="3" Grid.Column="0" Margin="0,0,10,8"/>
+                                    <TextBlock Text="7" Foreground="White" FontSize="14" Grid.Row="3" Grid.Column="1" Margin="10,0,0,8"/>
+
+                                    <TextBlock Text="Last Played:" Foreground="White" FontSize="14" FontFamily="Inter" FontWeight="ExtraBold" Grid.Row="4" Grid.Column="0" Margin="0,0,10,8"/>
+                                    <TextBlock Text="22.1.2025" Foreground="White" FontSize="14" Grid.Row="4" Grid.Column="1" Margin="10,0,0,8"/>
                                 </Grid>
-                                <Button.ContextMenu>
-                                    <ContextMenu x:Name="ConfigContextMenu" HorizontalOffset="0" MaxHeight="180"/>
-                                </Button.ContextMenu>
-                            </Button>
-
-                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,8,0,0">
-                                <Button Content="&#xE70F;" Tag="#3C3C3C" Style="{StaticResource MainButtonStyle}"
-                                Width="43" Height="30" FontFamily="Segoe MDL2 Assets"/>
-                                <Button Content="&#xED25;" Command="{Binding OpenDirectory}" Tag="#3C3C3C" Style="{StaticResource MainButtonStyle}"
-                                Width="43" Height="30" FontFamily="Segoe MDL2 Assets" Margin="6,0,0,0"/>
-                                <Button Content="&#xE8EC;" Tag="#3C3C3C" Style="{StaticResource MainButtonStyle}"
-                                Width="43" Height="30" FontFamily="Segoe MDL2 Assets" Margin="6,0,0,0"/>
-                                <Button Content="&#xE74D;" Background="#D32F2F" Tag="#E53935" Style="{StaticResource MainButtonStyle}"
-                                Width="43" Height="30" FontFamily="Segoe MDL2 Assets" Margin="6,0,0,0"/>
                             </StackPanel>
-
-                            <Grid Margin="0,20,0,0">
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                </Grid.RowDefinitions>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="Auto"/>
-                                </Grid.ColumnDefinitions>
-
-                                <TextBlock Text="Patches applied:" Foreground="White" FontSize="14" FontFamily="Inter" FontWeight="ExtraBold" VerticalAlignment="Top" Grid.Row="1" Grid.Column="0" Margin="0,0,10,8"/>
-                                <TextBlock Text="5" Foreground="White" FontSize="14" VerticalAlignment="Top" TextAlignment="Right" Grid.Row="1" Grid.Column="1" Margin="10,0,0,8"/>
-
-                                <TextBlock Text="Playtime:" Foreground="White" FontSize="14" FontFamily="Inter" FontWeight="ExtraBold" VerticalAlignment="Top" Grid.Row="2" Grid.Column="0" Margin="0,0,10,8"/>
-                                <TextBlock Text="1D 5H 11S" Foreground="White" FontSize="14" VerticalAlignment="Top" TextAlignment="Right" Grid.Row="2" Grid.Column="1" Margin="10,0,0,8"/>
-
-                                <TextBlock Text="# of Replays:" Foreground="White" FontSize="14" FontFamily="Inter" FontWeight="ExtraBold" VerticalAlignment="Top" Grid.Row="3" Grid.Column="0" Margin="0,0,10,8"/>
-                                <TextBlock Text="7" Foreground="White" FontSize="14" VerticalAlignment="Top" TextAlignment="Right" Grid.Row="3" Grid.Column="1" Margin="10,0,0,8"/>
-
-                                <TextBlock Text="Last Played:" Foreground="White" FontSize="14" FontFamily="Inter" FontWeight="ExtraBold" VerticalAlignment="Top" Grid.Row="4" Grid.Column="0" Margin="0,0,10,8"/>
-                                <TextBlock Text="22.1.2025" Foreground="White" FontSize="14" VerticalAlignment="Top" TextAlignment="Right" Grid.Row="4" Grid.Column="1" Margin="10,0,0,8"/>
-                            </Grid>
-
-                        </StackPanel>
+                        </Grid>
                     </Grid>
                 </Grid>
 
-                <!-- Footer -->
                 <Grid Grid.Row="3">
                     <TextBlock x:Name="footerTextBlock" Foreground="White" Margin="6,0,0,0"
                            Text="{Binding LoadingViewModel.VersionNumber}" VerticalAlignment="Center"/>
@@ -211,8 +223,7 @@
                            Text="Total Playtime: 4D 11H 20S" 
                            VerticalAlignment="Center" HorizontalAlignment="Right"/>
                 </Grid>
-
-                <!-- Loading Screen -->
+                
                 <!-- Since there is loading logic now, comment out the Grid below if you want to see
                      how the MainWindow actually looks like. -->
                 <Grid Grid.RowSpan="4" Grid.Row="1"
@@ -222,7 +233,6 @@
                     <view:LoadingScreen DataContext="{Binding LoadingViewModel}"/>
                 </Grid>
 
-                <!-- Notifications -->
                 <Grid x:Name="NotificationContainer" Grid.RowSpan="4" Panel.ZIndex="2000"/>
             </Grid>
         </Border>

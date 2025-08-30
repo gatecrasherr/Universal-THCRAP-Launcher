@@ -118,6 +118,32 @@ namespace Universal_THCRAP_Launcher
             }
         }
 
+        private void RenameInstance(object sender, RoutedEventArgs e)
+        {
+            if (DataContext is MainViewModel viewModel)
+            {
+                string newName = DialogService.Instance.NameGameDialog();
+                viewModel.RenameInstance(newName);
+            }
+        }
+
+        private void ChangeCategory(object sender, RoutedEventArgs e)
+        {
+            if (DataContext is MainViewModel viewModel)
+            {
+                DialogService.Instance.ChangeCategoryDialog();
+            }
+        }
+
+        private void DeleteInstance(object sender, RoutedEventArgs e)
+        {
+            if (DataContext is MainViewModel viewModel)
+            {
+                bool toDelete = DialogService.Instance.DeleteGameDialog();
+                viewModel.DeleteInstance();
+            }
+        }
+
         private void Config_ContextMenuOpening(object sender, ContextMenuEventArgs e)
         {
             e.Handled = true;

@@ -206,6 +206,41 @@ namespace Universal_THCRAP_Launcher.MVVM.Model
             File.WriteAllText(_UTLConfig, rootObject.ToString(Formatting.Indented));
         }
 
+        public void ChangeName(string gameID, string newName)
+        {
+            var existingJson = File.ReadAllText(_UTLConfig);
+            JObject rootObject = JObject.Parse(existingJson);
+            if (rootObject.ContainsKey(gameID))
+            {
+                rootObject[gameID]["customName"] = newName;
+                File.WriteAllText(_UTLConfig, rootObject.ToString(Formatting.Indented));
+            }
+        }
+
+        public string RestoreName(string gameID)
+        {
+            var existingJson = File.ReadAllText(_UTLConfig);
+            JObject rootObject = JObject.Parse(existingJson);
+            if (rootObject.ContainsKey(gameID))
+            {
+                rootObject[gameID]["customName"] = null;
+                File.WriteAllText(_UTLConfig, rootObject.ToString(Formatting.Indented));
+            }
+
+            return rootObject[gameID]["gameTitle"].ToString();
+        }
+
+        public void RemoveGame(string gameID)
+        {
+            var existingJson = File.ReadAllText(_UTLConfig);
+            JObject rootObject = JObject.Parse(existingJson);
+            if (rootObject.ContainsKey(gameID))
+            {
+                rootObject.Remove(gameID);
+                File.WriteAllText(_UTLConfig, rootObject.ToString(Formatting.Indented));
+            }
+        }
+
         // Helper Function
 
         private static void CacheImage(ImageSource img, string gameID)

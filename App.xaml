@@ -13,6 +13,7 @@
                 <ResourceDictionary Source="/Themes/MainButton.xaml"/>
                 <ResourceDictionary Source="/Themes/NavButton.xaml"/>
                 <ResourceDictionary Source="/Themes/Scrollbar.xaml"/>
+                <ResourceDictionary Source="/Themes/TextBox.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

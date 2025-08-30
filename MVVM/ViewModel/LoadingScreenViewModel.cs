@@ -70,6 +70,7 @@ namespace Universal_THCRAP_Launcher.MVVM.ViewModel
 
                 StatusText = "Missing THCRAP installation!";
 
+                // Breaks MVVM pattern, should move to a Service instead
                 var result = _dialogService.ShowInstallationChoiceDialog();
 
                 if (result == InstallationChoiceWindow.DialogueResult.DownloadLatest)
@@ -90,8 +91,13 @@ namespace Universal_THCRAP_Launcher.MVVM.ViewModel
             {
                 // We do this to convert games.js to config.json
                 foundConfig = false;
+            } else
+            {
+                // DialogService _dialogService = DialogService.Instance;
+                // _dialogService.NameGameDialog();
             }
-            StatusText = "Ready!";
+
+                StatusText = "Ready!";
         }
 
         public async Task FadeOutAsync()

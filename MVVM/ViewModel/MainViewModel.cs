@@ -24,6 +24,7 @@ namespace Universal_THCRAP_Launcher.MVVM.ViewModel
         private GameModel gameModel = new GameModel();
         private ConfigModel configModel = new ConfigModel();
         private LoadingScreenViewModel _loadingScreenViewModel;
+        private DialogService _dialogService = DialogService.Instance;
         private bool _contentLoaded = false;
         private readonly Dictionary<string, WrapPanel> categoryPanels = new Dictionary<string, WrapPanel>();
 
@@ -33,6 +34,8 @@ namespace Universal_THCRAP_Launcher.MVVM.ViewModel
         private string _selectedConfig;
         private string _selectedPath;
         private string _selectedID;
+
+        private GameItem _selectedGameItem;
 
         public ICommand LaunchGameCommand { get; }
         public ICommand OpenDirectory { get; }
@@ -96,7 +99,7 @@ namespace Universal_THCRAP_Launcher.MVVM.ViewModel
         private async Task LaunchGameAsync()
         {
 
-            if(!CanLaunchGame())
+            if (!CanLaunchGame())
                 return;
 
             var attemptLaunchNotification = NotificationService.Instance.ShowNotification("Launching...", $"Attempting to launch Instance...", NotificationViewModel.NotificationType.Info, 500);
@@ -124,7 +127,6 @@ namespace Universal_THCRAP_Launcher.MVVM.ViewModel
         private void OpenLocation()
         {
             // For now, I see no use to have a way to delete the FileName.exe if a path ends with it, other than in here.
-
             string selectedGamePath = GetGamePath(SelectedPath);
 
             if (Directory.Exists(selectedGamePath))
@@ -186,7 +188,10 @@ namespace Universal_THCRAP_Launcher.MVVM.ViewModel
                     string gameID = property.Name;
                     JObject gameData = property.Value as JObject;
 
-                    string title = gameData["gameTitle"]?.ToString() ?? "Unknown Game";
+                    string customName = gameData["customName"]?.ToString();
+                    string title = !string.IsNullOrEmpty(customName)
+                        ? customName
+                        : await gameModel.IDtoFullNameAsync(gameID, strDef);
                     string path = gameData["path"]?.ToString() ?? string.Empty;
                     string category = gameData["category"]?.ToString() ?? "Uncategorized";
                     string config = gameData["config"]?.ToString() ?? "ERR";
@@ -198,7 +203,7 @@ namespace Universal_THCRAP_Launcher.MVVM.ViewModel
 
                     var gameItem = new GameItem
                     {
-                        DisplayTitle = await gameModel.IDtoFullNameAsync(gameID, strDef),
+                        DisplayTitle = title,
                         GameId = gameID,
                         GamePath = gameModel.ResolvePath(path),
                         DisplayIcon = await Task.Run(() => gameModel.GameImage(path, gameID))
@@ -318,7 +323,6 @@ namespace Universal_THCRAP_Launcher.MVVM.ViewModel
         {
             if (Application.Current.MainWindow is MainWindow mainWindow)
             {
-                // Can't have two panels with the same name
                 if (categoryPanels.ContainsKey(categoryName))
                     return;
 
@@ -349,7 +353,54 @@ namespace Universal_THCRAP_Launcher.MVVM.ViewModel
             }
         }
 
+        public void RenameInstance(string name)
+        {
+            if (name == null)
+                return;
+
+            if (_selectedGameItem == null)
+                return;
+
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                string oldName = gameModel.RestoreName(SelectedID);
+                SelectedGameTitle = oldName;
+                _selectedGameItem.DisplayTitle = oldName;
+                return;
+            }
+
+            SelectedGameTitle = name;
+            _selectedGameItem.DisplayTitle = name;
+
+            gameModel.ChangeName(SelectedID, name);
+        }
+
+        public void DeleteInstance()
+        {
+            if (_selectedGameItem == null)
+                return;
+
+            string gameId = _selectedGameItem.GameId;
+
+            gameModel.RemoveGame(gameId);
+            categoryPanels[GetSelectedGameItemCategory()].Children.Remove(_selectedGameItem);
+            UnselectGame();
+        }
+
         // Helper functions
+
+        public string GetSelectedGameItemCategory()
+        {
+            if (_selectedGameItem == null)
+                return null;
+
+            foreach (var kvp in categoryPanels)
+            {
+                if (kvp.Value.Children.Contains(_selectedGameItem))
+                    return kvp.Key;
+            }
+            return null;
+        }
 
         private void LastConfigToJSON(string gameID, string configName)
         {
@@ -377,7 +428,6 @@ namespace Universal_THCRAP_Launcher.MVVM.ViewModel
                 path = path.Substring(0, lastSlashIndex);
             }
 
-            // Explorer is weird as it forces us to use \\ instead of /, so we replace it here
             path = path.Replace('/', '\\');
 
             return path;
@@ -390,6 +440,8 @@ namespace Universal_THCRAP_Launcher.MVVM.ViewModel
 
         private void SelectGameItem(GameItem item, GameSelectedEventArgs e)
         {
+            _selectedGameItem = item;
+
             string configPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "thcrap", "config", "UTL", "config", "config.json");
 
             item.DisplayIconOpacity = 0.3f;
